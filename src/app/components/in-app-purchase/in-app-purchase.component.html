@@ -1,0 +1,63 @@
+<div class="container">
+    <h2>Gestionnaire d'App Store Connect</h2>
+    <p>Consultez et gérez vos achats in-app facilement</p>
+  
+    <!-- Bouton de synchronisation -->
+    <div class="controls">
+      <button (click)="syncData()" [disabled]="isLoading">
+        Synchroniser avec App Store Connect
+      </button>
+      <p *ngIf="syncStatus">{{ syncStatus }}</p>
+    </div>
+  
+    <!-- Liste des achats in-app -->
+    <div class="inapp-list">
+      <h3>Achats In-App</h3>
+      <ul>
+        <li *ngFor="let inApp of inAppPurchases" (click)="selectInApp(inApp.id)">
+          {{ inApp.name }} ({{ inApp.productId }})
+        </li>
+      </ul>
+    </div>
+  
+    <!-- Détails de l'achat in-app sélectionné -->
+    <div *ngIf="selectedInApp" class="inapp-details">
+      <h3>Détails pour {{ selectedInApp.name }}</h3>
+      <p>App: {{ selectedInApp.app_name }}</p>
+      <p>Bundle ID: {{ selectedInApp.bundle_id }}</p>
+      <p>Type: {{ selectedInApp.type }}</p>
+  
+      <!-- Sélection du pays -->
+      <div class="prices">
+        <h4>Prix par pays</h4>
+        <select [(ngModel)]="selectedCountry" (change)="filterPrices()">
+          <option value="">Tous les pays</option>
+          <option *ngFor="let country of countries" [value]="country">
+            {{ country }}
+          </option>
+        </select>
+  
+        <!-- Tableau des prix -->
+        <table>
+          <thead>
+            <tr>
+              <th>Pays</th>
+              <th>Prix client</th>
+              <th>Recette</th>
+              <th>Type de prix</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let price of displayedPrices">
+              <td>{{ price.country }}</td>
+              <td>{{ price.customer_price }}</td>
+              <td>{{ price.proceeds }}</td>
+              <td>{{ price.price_type }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  
+
+  </div>
