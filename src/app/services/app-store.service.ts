@@ -44,6 +44,11 @@ export class AppStoreService {
     return this.http.get<Price[]>(`${this.apiUrl}/prices/${countryCode}`);
   }
 
+  /*getAllCountries(): Observable<Price[]> {
+    return this.http.get<Price[]>(`${this.apiUrl}/api/countries`);
+  }
+  */
+
   // Méthode pour synchroniser les données avec l'API App Store Connect
   syncDataWithAppStoreConnect(): Observable<any> {
     return this.http.get(`${this.apiUrl}`);
