@@ -2,19 +2,31 @@
   <h2>Gestionnaire d'App Store Connect</h2>
   <p>Consultez et gérez vos achats in-app facilement</p>
 
-  <!-- Bouton de synchronisation -->
+  <!-- Bouton de synchronisation
   <div class="controls">
     <button (click)="syncData()" [disabled]="isLoading">
       Synchroniser avec App Store Connect
     </button>
     <p *ngIf="syncStatus">{{ syncStatus }}</p>
+  </div>  -->
+
+  <!-- Logos des applications -->
+  <div class="app-logos">
+    <div class="logo" (click)="filterInAppPurchases('Contacts Backup + Export')">
+      <img src="../../../assets/images/contacts-backup-logo.png" alt="Contacts Backup">
+      <p>Contacts Backup</p>
+    </div>
+    <div class="logo" (click)="filterInAppPurchases('Enigmatics')">
+      <img src="../../../assets/images/enigmatics-logo.png" alt="Enigmatics">
+      <p>Enigmatics</p>
+    </div>
   </div>
 
-  <!-- Liste des achats in-app -->
+  <!-- Liste des achats in-app filtrés -->
   <div class="inapp-list">
     <h3>Achats In-App</h3>
     <ul>
-      <li *ngFor="let inApp of inAppPurchases" (click)="selectInApp(inApp.id)">
+      <li *ngFor="let inApp of filteredInAppPurchases" (click)="selectInApp(inApp.id)">
         {{ inApp.name }} ({{ inApp.productId }})
       </li>
     </ul>
@@ -58,6 +70,4 @@
       </table>
     </div>
   </div>
-
-
 </div>

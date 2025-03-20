@@ -29,6 +29,7 @@ interface InAppPurchase {
 })
 export class InAppPurchaseComponent implements OnInit {
   inAppPurchases: InAppPurchase[] = [];
+  filteredInAppPurchases: InAppPurchase[] = []; // Nouvelle propriété pour les achats filtrés
   selectedInApp: InAppPurchase | null = null;
   countries: string[] = ['USA', 'FRA', 'GBR', 'DEU', 'JPN', 'BEL', 'BRA', 'CHN', 'IND', 'RUS'];
   selectedCountry: string = '';
@@ -47,6 +48,7 @@ export class InAppPurchaseComponent implements OnInit {
     this.appStoreService.getAllInAppPurchases().subscribe({
       next: (data) => {
         this.inAppPurchases = data;
+        this.filteredInAppPurchases = data; // Initialiser avec tous les achats
         this.isLoading = false;
       },
       error: (error) => {
@@ -56,14 +58,23 @@ export class InAppPurchaseComponent implements OnInit {
     });
   }
 
+  // Nouvelle méthode pour filtrer les achats in-app par application
+  filterInAppPurchases(appName: string): void {
+    this.filteredInAppPurchases = this.inAppPurchases.filter(
+      (inApp) => inApp.app_name === appName
+    );
+    this.selectedInApp = null; // Réinitialiser la sélection
+    this.displayedPrices = []; // Réinitialiser les prix affichés
+  }
+
   selectInApp(inAppId: string): void {
     const foundInApp = this.inAppPurchases.find((inApp) => inApp.id === inAppId);
-    this.selectedInApp = foundInApp || null; // Gérer le cas où find ne trouve rien
+    this.selectedInApp = foundInApp || null;
 
     if (this.selectedInApp) {
       this.displayedPrices = this.selectedInApp.prices;
     } else {
-      this.displayedPrices = []; // Réinitialiser les prix si aucun achat n'est sélectionné
+      this.displayedPrices = [];
     }
   }
 
