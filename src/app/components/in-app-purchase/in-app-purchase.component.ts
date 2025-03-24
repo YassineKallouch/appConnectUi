@@ -1,7 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { AppStoreService } from '../../services/app-store.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatSelectModule } from '@angular/material/select';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 interface Price {
   country: string;
@@ -22,8 +28,15 @@ interface InAppPurchase {
 
 @Component({
   selector: 'app-in-app-purchase',
-  //standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, 
+            FormsModule,
+            MatTableModule,
+            MatPaginatorModule,
+            MatSortModule,
+            MatSelectModule,
+            MatCardModule,
+            MatFormFieldModule
+          ],
   templateUrl: './in-app-purchase.component.html',
   styleUrls: ['./in-app-purchase.component.css'],
 })
@@ -36,6 +49,15 @@ export class InAppPurchaseComponent implements OnInit {
   displayedPrices: Price[] = [];
   isLoading = false;
   syncStatus = '';
+
+  displayedColumns: string[] = ['country', 'customer_price', 'proceeds', 'price_type'];
+  dataSource = new MatTableDataSource<Price>();
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+
+
+  selectedInAppId: string | null = null;
 
   constructor(private appStoreService: AppStoreService) {}
 
@@ -57,6 +79,7 @@ export class InAppPurchaseComponent implements OnInit {
       },
     });
   }
+  
 
   // Nouvelle méthode pour filtrer les achats in-app par application
   filterInAppPurchases(appName: string): void {
@@ -67,6 +90,30 @@ export class InAppPurchaseComponent implements OnInit {
     this.displayedPrices = []; // Réinitialiser les prix affichés
   }
 
+  // Modifiez ou ajoutez cette méthode
+  onInAppSelectionChange(): void {
+    if (this.selectedInAppId) {
+      this.selectInApp(this.selectedInAppId);
+    } else {
+      this.selectedInApp = null;
+      this.dataSource.data = [];
+    }
+  }
+
+  // Modifiez selectInApp pour garder la même logique
+  selectInApp(inAppId: string): void {
+    const foundInApp = this.inAppPurchases.find(inApp => inApp.id === inAppId);
+    this.selectedInApp = foundInApp || null;
+    this.selectedCountry = ''; // Réinitialise le filtre de pays
+    
+    if (this.selectedInApp) {
+      this.filterPrices(); // Applique le filtre immédiatement
+    } else {
+      this.dataSource.data = [];
+    }
+  }
+
+/*
   selectInApp(inAppId: string): void {
     const foundInApp = this.inAppPurchases.find((inApp) => inApp.id === inAppId);
     this.selectedInApp = foundInApp || null;
@@ -76,6 +123,11 @@ export class InAppPurchaseComponent implements OnInit {
     } else {
       this.displayedPrices = [];
     }
+  }
+*/
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 
   filterPrices(): void {
@@ -88,6 +140,8 @@ export class InAppPurchaseComponent implements OnInit {
     } else {
       this.displayedPrices = this.selectedInApp.prices;
     }
+    
+    this.dataSource.data = this.displayedPrices;
   }
 
   syncData(): void {
