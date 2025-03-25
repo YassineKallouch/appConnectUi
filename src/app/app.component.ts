@@ -5,7 +5,7 @@ import { InAppPurchaseComponent } from './components/in-app-purchase/in-app-purc
 @Component({
   selector: 'app-root',
   imports: [
-    InAppPurchaseComponent
+    RouterOutlet
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'

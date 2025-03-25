@@ -67,13 +67,6 @@
   z-index: 1;
 }
 
-/* Style pour le paginator */
-mat-paginator {
-  position: sticky;
-  bottom: 0;
-  background: white;
-  z-index: 1;
-}
 
 /* Style pour le formulaire */
 mat-form-field {
@@ -93,8 +86,14 @@ mat-row, mat-header-row {
 
 .inapp-list {
   margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
 }
 
 .inapp-list mat-form-field {
-  width: 100%;
+  width: 50%;
+}
+
+h3 {
+  text-align: center;
 }
