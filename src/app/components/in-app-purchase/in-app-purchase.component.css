@@ -1,3 +1,4 @@
+/*
 .app-logos {
   display: flex;
   justify-content: space-evenly;
@@ -8,7 +9,7 @@
 .logo {
   text-align: center;
   cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Ajout de la transition */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   padding: 10px;
   border-radius: 10px;
 }
@@ -18,31 +19,31 @@
   height: 200px;
   border-radius: 10px;
   border: 2px solid #ccc;
-  transition: border-color 0.3s, transform 0.3s ease; /* Ajout de transform */
-  object-fit: cover; /* Pour conserver les proportions */
+  transition: border-color 0.3s, transform 0.3s ease;
+  object-fit: cover;
 }
 
 .logo p {
   margin-top: 10px;
   font-weight: bold;
-  transition: transform 0.3s ease, color 0.3s ease; /* Transition pour le texte */
+  transition: transform 0.3s ease, color 0.3s ease;
 }
 
 .logo:hover {
-  transform: scale(1.05); /* Effet de zoom */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 2); /* Ombre légère pour l'effet 3D */
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 2);
 }
 
 .logo:hover img {
   border-color: #007bff;
-  transform: scale(1.03); /* Zoom légèrement plus fort sur l'image */
+  transform: scale(1.03);
 }
 
 .logo:hover p {
-  transform: scale(1.05); /* Zoom sur le texte */
-  color: #007bff; /* Changement de couleur optionnel */
+  transform: scale(1.05);
+  color: #007bff;
 }
-
+*/
 
 .sticky-table-container {
   max-height: 500px; /* Ajustez cette valeur selon vos besoins */

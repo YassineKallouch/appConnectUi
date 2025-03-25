@@ -1,4 +1,10 @@
-<div class="container">
+<mat-icon 
+  aria-hidden="false" 
+  aria-label="Retour à l'accueil" 
+  fontIcon="home" 
+  (click)="goHome()"
+  style="cursor: pointer;">
+</mat-icon><div class="container">
 
 
   <!-- Bouton de synchronisation
@@ -10,6 +16,7 @@
   </div>  -->
 
   <!-- Logos des applications -->
+   <!--
   <div class="app-logos">
     <div class="logo" (click)="filterInAppPurchases('Contacts Backup + Export')">
       <img src="../../../assets/images/contacts-backup-logo.png" alt="Contacts Backup">
@@ -20,6 +27,7 @@
       <p>Enigmatics</p>
     </div>
   </div>
+-->
   <h3>Achats In-App</h3>
   <!-- Liste des achats in-app filtrés -->
   <div class="inapp-list">

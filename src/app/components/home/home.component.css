@@ -1,0 +1,44 @@
+.app-logos {
+    display: flex;
+    justify-content: space-evenly;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  
+.logo {
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Ajout de la transition */
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.logo img {
+  width: 200px;
+  height: 200px;
+  border-radius: 10px;
+  border: 2px solid #ccc;
+  transition: border-color 0.3s, transform 0.3s ease; /* Ajout de transform */
+  object-fit: cover; /* Pour conserver les proportions */
+}
+
+.logo p {
+  margin-top: 10px;
+  font-weight: bold;
+  transition: transform 0.3s ease, color 0.3s ease; /* Transition pour le texte */
+}
+
+.logo:hover {
+  transform: scale(1.05); /* Effet de zoom */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 2); /* Ombre légère pour l'effet 3D */
+}
+
+.logo:hover img {
+  border-color: #007bff;
+  transform: scale(1.03); /* Zoom légèrement plus fort sur l'image */
+}
+
+.logo:hover p {
+  transform: scale(1.05); /* Zoom sur le texte */
+  color: #007bff; /* Changement de couleur optionnel */
+}

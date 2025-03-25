@@ -2,12 +2,14 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { AppStoreService } from '../../services/app-store.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { ActivatedRoute, Router } from '@angular/router';
+import { MatIcon } from '@angular/material/icon';
+
 
 interface Price {
   country: string;
@@ -30,12 +32,12 @@ interface InAppPurchase {
   selector: 'app-in-app-purchase',
   imports: [CommonModule, 
             FormsModule,
-            MatTableModule,
-            MatPaginatorModule,
+            MatTableModule, 
             MatSortModule,
             MatSelectModule,
             MatCardModule,
-            MatFormFieldModule
+            MatFormFieldModule,
+            MatIcon
           ],
   templateUrl: './in-app-purchase.component.html',
   styleUrls: ['./in-app-purchase.component.css'],
@@ -53,42 +55,69 @@ export class InAppPurchaseComponent implements OnInit {
   displayedColumns: string[] = ['country', 'customer_price', 'proceeds', 'price_type'];
   dataSource = new MatTableDataSource<Price>();
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
 
   selectedInAppId: string | null = null;
+  appName: string = '';
 
-  constructor(private appStoreService: AppStoreService) {}
+  constructor(
+    private appStoreService: AppStoreService,
+    private route: ActivatedRoute, // 👈 Ajout de ActivatedRoute
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-    this.loadInAppPurchases();
+    // Récupérer appName depuis l'URL
+    this.route.params.subscribe(params => {
+      this.appName = params['appName']; // 👈 Récupère l'URL dynamique
+      this.loadInAppPurchases();
+    });
   }
 
   loadInAppPurchases(): void {
-    this.isLoading = true;
     this.appStoreService.getAllInAppPurchases().subscribe({
       next: (data) => {
         this.inAppPurchases = data;
-        this.filteredInAppPurchases = data; // Initialiser avec tous les achats
-        this.isLoading = false;
+        
+        // Liste des applications valides
+        const validApps = [...new Set(this.inAppPurchases.map(inApp => inApp.app_name))];
+
+        if (!validApps.includes(this.appName)) {
+          this.router.navigateByUrl('/'); // 👈 Redirige si appName est invalide
+          return;
+        }
+
+        this.filterInAppPurchases();
       },
-      error: (error) => {
-        console.error('Error fetching in-app purchases', error);
-        this.isLoading = false;
+      error: () => {
+        this.router.navigateByUrl('/'); // 👈 Redirige aussi en cas d'erreur API
       },
     });
   }
-  
 
-  // Nouvelle méthode pour filtrer les achats in-app par application
-  filterInAppPurchases(appName: string): void {
+  // 🔹 **Méthode pour filtrer les achats par application**
+  filterInAppPurchases(): void {
+    if (!this.appName) return; // Si pas d'appName, ne filtre pas
+
     this.filteredInAppPurchases = this.inAppPurchases.filter(
-      (inApp) => inApp.app_name === appName
+      (inApp) => inApp.app_name === this.appName
     );
-    this.selectedInApp = null; // Réinitialiser la sélection
-    this.displayedPrices = []; // Réinitialiser les prix affichés
+
+    if (this.filteredInAppPurchases.length > 0) {
+      this.selectedInApp = null; // Sélectionner le 1er élément
+      this.filterPrices();
+    }
   }
+
+
+
+  filterPrices(): void {
+    if (!this.selectedInApp) return;
+    this.displayedPrices = this.selectedInApp.prices;
+    this.dataSource.data = this.displayedPrices;
+  }
+
 
   // Modifiez ou ajoutez cette méthode
   onInAppSelectionChange(): void {
@@ -126,38 +155,12 @@ export class InAppPurchaseComponent implements OnInit {
   }
 */
   ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
 
-  filterPrices(): void {
-    if (!this.selectedInApp) return;
-
-    if (this.selectedCountry) {
-      this.displayedPrices = this.selectedInApp.prices.filter(
-        (price: Price) => price.country === this.selectedCountry
-      );
-    } else {
-      this.displayedPrices = this.selectedInApp.prices;
-    }
-    
-    this.dataSource.data = this.displayedPrices;
+  goHome(){
+    this.router.navigateByUrl('/');
   }
 
-  syncData(): void {
-    this.isLoading = true;
-    this.syncStatus = 'Synchronisation en cours...';
-    this.appStoreService.syncDataWithAppStoreConnect().subscribe({
-      next: () => {
-        this.syncStatus = 'Synchronisation réussie !';
-        this.loadInAppPurchases();
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Error syncing data', error);
-        this.syncStatus = 'Échec de la synchronisation';
-        this.isLoading = false;
-      },
-    });
-  }
+
 }
