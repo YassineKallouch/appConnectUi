@@ -1,0 +1,89 @@
+<div class="login-container">
+    <mat-card class="login-card">
+      <mat-card-header class="login-header">
+        <mat-card-title class="login-title">Connexion</mat-card-title>
+      </mat-card-header>
+  
+      <mat-card-content>
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+          <!-- Email -->
+          <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Email</mat-label>
+            <input 
+              matInput 
+              formControlName="email" 
+              type="email" 
+              placeholder="exemple@email.com"
+              autocomplete="email"
+            >
+            <mat-icon matSuffix>alternate_email</mat-icon>
+            @if (loginForm.get('email')?.hasError('required')) {
+              <mat-error>L'email est obligatoire</mat-error>
+            }
+            @if (loginForm.get('email')?.hasError('email')) {
+              <mat-error>Format d'email invalide</mat-error>
+            }
+          </mat-form-field>
+  
+          <!-- Mot de passe -->
+          <mat-form-field appearance="fill" class="full-width">
+            <mat-label>Mot de passe</mat-label>
+            <input 
+              matInput 
+              formControlName="password" 
+              [type]="hidePassword ? 'password' : 'text'"
+              autocomplete="current-password"
+            >
+            <button 
+              type="button" 
+              mat-icon-button 
+              matSuffix 
+              (click)="hidePassword = !hidePassword"
+              [attr.aria-label]="'Hide password'"
+              [attr.aria-pressed]="hidePassword"
+            >
+              <mat-icon>
+                @if (hidePassword) {
+                  visibility_off
+                } @else {
+                  visibility
+                }
+              </mat-icon>
+            </button>
+            @if (loginForm.get('password')?.hasError('required')) {
+              <mat-error>Le mot de passe est obligatoire</mat-error>
+            }
+          </mat-form-field>
+  
+          <!-- Bouton Submit -->
+          <button 
+            mat-raised-button 
+            color="primary" 
+            type="submit" 
+            class="full-width login-button"
+            [disabled]="!loginForm.valid || isLoading"
+          >
+            @if (!isLoading) {
+              <span>Se connecter</span>
+            }
+            @if (isLoading) {
+              <mat-spinner diameter="20"></mat-spinner>
+            }
+          </button>
+  
+          <!-- Lien mot de passe oublié -->
+          <div class="forgot-password">
+            <a mat-button color="accent" routerLink="/reset-password">Mot de passe oublié ?</a>
+          </div>
+        </form>
+      </mat-card-content>
+  
+      <mat-divider></mat-divider>
+  
+      <!-- Inscription -->
+      <mat-card-actions class="login-footer">
+        <span>Nouveau ici ?</span>
+        <a mat-button color="primary" routerLink="/register">Créer un compte</a>
+      </mat-card-actions>
+    </mat-card>
+  </div>

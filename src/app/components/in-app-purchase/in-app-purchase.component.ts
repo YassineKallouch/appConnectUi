@@ -52,7 +52,9 @@ export class InAppPurchaseComponent implements OnInit {
   isLoading = false;
   syncStatus = '';
 
-  displayedColumns: string[] = ['country', 'customer_price', 'proceeds', 'price_type'];
+  //displayedColumns: string[] = ['country', 'customer_price', 'proceeds', 'price_type'];
+  displayedColumns: string[] = ['name', 'country', 'customer_price', 'price_type']; // Retirez 'proceeds' et ajoutez 'name'
+
   dataSource = new MatTableDataSource<Price>();
 
   @ViewChild(MatSort) sort!: MatSort;
@@ -113,21 +115,22 @@ export class InAppPurchaseComponent implements OnInit {
 
 
   filterPrices(): void {
-    if (!this.selectedInApp) return;
-    this.displayedPrices = this.selectedInApp.prices;
+    if (this.selectedInApp) {
+      // Filtre pour un in-app spécifique
+      this.displayedPrices = this.selectedCountry 
+        ? this.selectedInApp.prices.filter(p => p.country === this.selectedCountry)
+        : this.selectedInApp.prices;
+    } else {
+      // Filtre pour tous les in-app
+      this.displayedPrices = this.dataSource.data.filter(p => 
+        !this.selectedCountry || p.country === this.selectedCountry
+      );
+    }
     this.dataSource.data = this.displayedPrices;
   }
 
 
-  // Modifiez ou ajoutez cette méthode
-  onInAppSelectionChange(): void {
-    if (this.selectedInAppId) {
-      this.selectInApp(this.selectedInAppId);
-    } else {
-      this.selectedInApp = null;
-      this.dataSource.data = [];
-    }
-  }
+
 
   // Modifiez selectInApp pour garder la même logique
   selectInApp(inAppId: string): void {
@@ -161,6 +164,37 @@ export class InAppPurchaseComponent implements OnInit {
   goHome(){
     this.router.navigateByUrl('/');
   }
+
+  // Mettez à jour les propriétés et méthodes existantes
+
+// Ajoutez cette méthode
+showAllInApps(): void {
+  this.selectedInApp = null;
+  this.selectedCountry = '';
+  
+  // Concatène tous les prix avec les infos des in-app
+  const allPrices = this.filteredInAppPurchases.flatMap(inApp => 
+    inApp.prices.map(price => ({
+      ...price,
+      inAppName: inApp.name,
+      productId: inApp.productId,
+      app_name: inApp.app_name,
+      bundle_id: inApp.bundle_id,
+      type: inApp.type
+    }))
+  );
+  
+  this.dataSource.data = allPrices;
+}
+
+// Modifiez onInAppSelectionChange
+onInAppSelectionChange(): void {
+  if (this.selectedInAppId) {
+    this.selectInApp(this.selectedInAppId);
+  } else {
+    this.showAllInApps();
+  }
+}
 
 
 }

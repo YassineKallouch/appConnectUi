@@ -4,36 +4,16 @@
   fontIcon="home" 
   (click)="goHome()"
   style="cursor: pointer;">
-</mat-icon><div class="container">
+</mat-icon>
 
-
-  <!-- Bouton de synchronisation
-  <div class="controls">
-    <button (click)="syncData()" [disabled]="isLoading">
-      Synchroniser avec App Store Connect
-    </button>
-    <p *ngIf="syncStatus">{{ syncStatus }}</p>
-  </div>  -->
-
-  <!-- Logos des applications -->
-   <!--
-  <div class="app-logos">
-    <div class="logo" (click)="filterInAppPurchases('Contacts Backup + Export')">
-      <img src="../../../assets/images/contacts-backup-logo.png" alt="Contacts Backup">
-      <p>Contacts Backup</p>
-    </div>
-    <div class="logo" (click)="filterInAppPurchases('Enigmatics')">
-      <img src="../../../assets/images/enigmatics-logo.png" alt="Enigmatics">
-      <p>Enigmatics</p>
-    </div>
-  </div>
--->
+<div class="container">
   <h3>Achats In-App</h3>
-  <!-- Liste des achats in-app filtrés -->
+  
   <div class="inapp-list">
     <mat-form-field appearance="fill">
       <mat-label>Sélectionnez un achat in-app</mat-label>
       <mat-select [(ngModel)]="selectedInAppId" (selectionChange)="onInAppSelectionChange()">
+        <mat-option value="">Afficher tous les in-app</mat-option>
         @for (inApp of filteredInAppPurchases; track inApp.id) {
           <mat-option [value]="inApp.id">
             {{ inApp.name }} ({{ inApp.productId }})
@@ -43,67 +23,70 @@
     </mat-form-field>
   </div>
 
-  <!-- Détails de l'achat in-app sélectionné -->
-  @if (selectedInApp) {
-    <div class="inapp-details">
-      <mat-card>
+  <div class="inapp-details">
+    <mat-card>
+      @if (selectedInApp) {
         <mat-card-header>
           <mat-card-title>Détails pour {{ selectedInApp.name }}</mat-card-title>
         </mat-card-header>
-        
         <mat-card-content>
           <p><strong>App:</strong> {{ selectedInApp.app_name }}</p>
           <p><strong>Bundle ID:</strong> {{ selectedInApp.bundle_id }}</p>
           <p><strong>Type:</strong> {{ selectedInApp.type }}</p>
-    
-          <div class="prices">
-          
-            
-            <mat-form-field appearance="fill">
-              <mat-label>Pays</mat-label>
-              <mat-select [(value)]="selectedCountry" (selectionChange)="filterPrices()">
-                <mat-option value="">Tous les pays</mat-option>
-                @for (country of countries; track country) {
-                  <mat-option [value]="country">
-                    {{ country }}
-                  </mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-    
-            <div class="mat-elevation-z8 sticky-table-container">
-              <table mat-table [dataSource]="dataSource" matSort class="sticky-table">
-                <!-- Colonne Pays -->
-                <ng-container matColumnDef="country" sticky>
-                  <th mat-header-cell *matHeaderCellDef > Pays </th>
-                  <td mat-cell *matCellDef="let price"> {{ price.country }} </td>
-                </ng-container>
-    
-                <!-- Colonne Prix client -->
-                <ng-container matColumnDef="customer_price" sticky>
-                  <th mat-header-cell *matHeaderCellDef> Prix client </th>
-                  <td mat-cell *matCellDef="let price"> {{ price.customer_price }} </td>
-                </ng-container>
-    
-                <!-- Colonne Recette -->
-                <ng-container matColumnDef="proceeds" sticky>
-                  <th mat-header-cell *matHeaderCellDef > Recette </th>
-                  <td mat-cell *matCellDef="let price"> {{ price.proceeds }} </td>
-                </ng-container>
-    
-                <!-- Colonne Type de prix -->
-                <ng-container matColumnDef="price_type" sticky>
-                  <th mat-header-cell *matHeaderCellDef> Type de prix </th>
-                  <td mat-cell *matCellDef="let price"> {{ price.price_type }} </td>
-                </ng-container>
-    
-                <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-              </table>
-            </div>
-          </div>
         </mat-card-content>
-      </mat-card>
-    </div>
-  }
+      } @else if (dataSource.data.length > 0) {
+        <mat-card-header>
+          <mat-card-title>Tous les achats in-app</mat-card-title>
+        </mat-card-header>
+      }
+
+      <mat-card-content>
+        <div class="prices">
+          <mat-form-field appearance="fill">
+            <mat-label>Pays</mat-label>
+            <mat-select [(value)]="selectedCountry" (selectionChange)="filterPrices()">
+              <mat-option value="">Tous les pays</mat-option>
+              @for (country of countries; track country) {
+                <mat-option [value]="country">{{ country }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          <div class="mat-elevation-z8 sticky-table-container">
+            <table mat-table [dataSource]="dataSource" matSort class="sticky-table">
+              
+              <!-- Colonne Nom -->
+              <ng-container matColumnDef="name" sticky>
+                <th mat-header-cell *matHeaderCellDef>Nom</th>
+                <td mat-cell *matCellDef="let element">
+                  {{ element.inAppName || selectedInApp?.name }}
+                  ({{ element.productId || selectedInApp?.productId }})
+                </td>
+              </ng-container>
+          
+              <!-- Colonne Pays -->
+              <ng-container matColumnDef="country" sticky>
+                <th mat-header-cell *matHeaderCellDef>Pays</th>
+                <td mat-cell *matCellDef="let element">{{ element.country }}</td>
+              </ng-container>
+          
+              <!-- Colonne Prix client -->
+              <ng-container matColumnDef="customer_price" sticky>
+                <th mat-header-cell *matHeaderCellDef>Prix client</th>
+                <td mat-cell *matCellDef="let element">{{ element.customer_price }}</td>
+              </ng-container>
+          
+              <!-- Colonne Type de prix -->
+              <ng-container matColumnDef="price_type" sticky>
+                <th mat-header-cell *matHeaderCellDef>Type</th>
+                <td mat-cell *matCellDef="let element">{{ element.price_type }}</td>
+              </ng-container>
+          
+              <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+          </div>          
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
 </div>
