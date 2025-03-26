@@ -57,6 +57,9 @@ export class InAppPurchaseComponent implements OnInit {
 
   dataSource = new MatTableDataSource<Price>();
 
+  allPrices: any[] = [];
+
+
   @ViewChild(MatSort) sort!: MatSort;
 
 
@@ -122,13 +125,12 @@ export class InAppPurchaseComponent implements OnInit {
         : this.selectedInApp.prices;
     } else {
       // Filtre pour tous les in-app
-      this.displayedPrices = this.dataSource.data.filter(p => 
-        !this.selectedCountry || p.country === this.selectedCountry
-      );
+      this.displayedPrices = this.selectedCountry
+        ? this.allPrices.filter(p => p.country === this.selectedCountry)
+        : this.allPrices;
     }
     this.dataSource.data = this.displayedPrices;
   }
-
 
 
 
@@ -167,25 +169,21 @@ export class InAppPurchaseComponent implements OnInit {
 
   // Mettez à jour les propriétés et méthodes existantes
 
-// Ajoutez cette méthode
-showAllInApps(): void {
-  this.selectedInApp = null;
-  this.selectedCountry = '';
-  
-  // Concatène tous les prix avec les infos des in-app
-  const allPrices = this.filteredInAppPurchases.flatMap(inApp => 
-    inApp.prices.map(price => ({
-      ...price,
-      inAppName: inApp.name,
-      productId: inApp.productId,
-      app_name: inApp.app_name,
-      bundle_id: inApp.bundle_id,
-      type: inApp.type
-    }))
-  );
-  
-  this.dataSource.data = allPrices;
-}
+  showAllInApps(): void {
+    this.selectedInApp = null;
+    this.selectedCountry = '';
+    
+    // Stockez les données complètes
+    this.allPrices = this.filteredInAppPurchases.flatMap(inApp => 
+      inApp.prices.map(price => ({
+        ...price,
+        inAppName: inApp.name,
+        productId: inApp.productId
+      }))
+    );
+    
+    this.dataSource.data = this.allPrices;
+  }
 
 // Modifiez onInAppSelectionChange
 onInAppSelectionChange(): void {
