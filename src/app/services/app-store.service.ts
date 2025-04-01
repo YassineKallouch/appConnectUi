@@ -53,4 +53,11 @@ export class AppStoreService {
   syncDataWithAppStoreConnect(): Observable<any> {
     return this.http.get(`${this.apiUrl}`);
   }
+
+  updateDesiredPrice(inAppId: string, price: number): Observable<Price[]> {
+    return this.http.post<Price[]>(`${this.apiUrl}/inapp/update-price`, {
+      inAppId,
+      desiredPrice: price
+    });
+  }
 }

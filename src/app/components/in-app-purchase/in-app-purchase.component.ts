@@ -9,13 +9,14 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatIcon } from '@angular/material/icon';
-
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 interface Price {
   country: string;
   customer_price: number;
   price_type: string;
   proceeds: number;
+  is_custom?: boolean;
 }
 
 interface InAppPurchase {
@@ -26,154 +27,127 @@ interface InAppPurchase {
   productId: string;
   type: string;
   prices: Price[];
+  desired_price?: number;
 }
 
 @Component({
   selector: 'app-in-app-purchase',
-  imports: [CommonModule, 
-            FormsModule,
-            MatTableModule, 
-            MatSortModule,
-            MatSelectModule,
-            MatCardModule,
-            MatFormFieldModule,
-            MatIcon
-          ],
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatTableModule,
+    MatSortModule,
+    MatSelectModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatIcon,
+    MatProgressSpinnerModule
+  ],
   templateUrl: './in-app-purchase.component.html',
-  styleUrls: ['./in-app-purchase.component.css'],
+  styleUrls: ['./in-app-purchase.component.css']
 })
 export class InAppPurchaseComponent implements OnInit {
   inAppPurchases: InAppPurchase[] = [];
-  filteredInAppPurchases: InAppPurchase[] = []; // Nouvelle propriété pour les achats filtrés
+  filteredInAppPurchases: InAppPurchase[] = [];
   selectedInApp: InAppPurchase | null = null;
   countries: string[] = ['USA', 'FRA', 'GBR', 'DEU', 'JPN', 'BEL', 'BRA', 'CHN', 'IND', 'RUS'];
   selectedCountry: string = '';
   displayedPrices: Price[] = [];
   isLoading = false;
+  isUpdatingPrice = false;
   syncStatus = '';
 
-  //displayedColumns: string[] = ['country', 'customer_price', 'proceeds', 'price_type'];
-  displayedColumns: string[] = ['name', 'country', 'customer_price', 'price_type']; // Retirez 'proceeds' et ajoutez 'name'
-
-  dataSource = new MatTableDataSource<Price>();
-
+  displayedColumns: string[] = ['name', 'country', 'customer_price', 'price_type'];
+  dataSource = new MatTableDataSource<Price>([]);
   allPrices: any[] = [];
-
+  desiredPrice?: number;
 
   @ViewChild(MatSort) sort!: MatSort;
-
-
   selectedInAppId: string | null = null;
   appName: string = '';
 
   constructor(
     private appStoreService: AppStoreService,
-    private route: ActivatedRoute, // 👈 Ajout de ActivatedRoute
+    private route: ActivatedRoute,
     private router: Router
   ) {}
 
   ngOnInit(): void {
-    // Récupérer appName depuis l'URL
     this.route.params.subscribe(params => {
-      this.appName = params['appName']; // 👈 Récupère l'URL dynamique
+      this.appName = params['appName'];
       this.loadInAppPurchases();
     });
   }
 
   loadInAppPurchases(): void {
+    this.isLoading = true;
     this.appStoreService.getAllInAppPurchases().subscribe({
-      next: (data) => {
+      next: (data: InAppPurchase[]) => {
         this.inAppPurchases = data;
-        
-        // Liste des applications valides
         const validApps = [...new Set(this.inAppPurchases.map(inApp => inApp.app_name))];
 
         if (!validApps.includes(this.appName)) {
-          this.router.navigateByUrl('/'); // 👈 Redirige si appName est invalide
+          this.router.navigateByUrl('/');
           return;
         }
 
         this.filterInAppPurchases();
+        this.isLoading = false;
       },
-      error: () => {
-        this.router.navigateByUrl('/'); // 👈 Redirige aussi en cas d'erreur API
-      },
+      error: (err) => {
+        console.error('Error loading in-app purchases:', err);
+        this.router.navigateByUrl('/');
+        this.isLoading = false;
+      }
     });
   }
 
-  // 🔹 **Méthode pour filtrer les achats par application**
   filterInAppPurchases(): void {
-    if (!this.appName) return; // Si pas d'appName, ne filtre pas
+    if (!this.appName) return;
 
     this.filteredInAppPurchases = this.inAppPurchases.filter(
       (inApp) => inApp.app_name === this.appName
     );
 
     if (this.filteredInAppPurchases.length > 0) {
-      this.selectedInApp = null; // Sélectionner le 1er élément
-      this.filterPrices();
+      this.showAllInApps();
     }
   }
-
-
 
   filterPrices(): void {
     if (this.selectedInApp) {
-      // Filtre pour un in-app spécifique
-      this.displayedPrices = this.selectedCountry 
+      this.displayedPrices = this.selectedCountry
         ? this.selectedInApp.prices.filter(p => p.country === this.selectedCountry)
-        : this.selectedInApp.prices;
+        : [...this.selectedInApp.prices]; // Crée une nouvelle référence
     } else {
-      // Filtre pour tous les in-app
       this.displayedPrices = this.selectedCountry
         ? this.allPrices.filter(p => p.country === this.selectedCountry)
-        : this.allPrices;
+        : [...this.allPrices];
     }
-    this.dataSource.data = this.displayedPrices;
+    this.updateDataSource();
   }
 
-
-
-  // Modifiez selectInApp pour garder la même logique
   selectInApp(inAppId: string): void {
-    const foundInApp = this.inAppPurchases.find(inApp => inApp.id === inAppId);
-    this.selectedInApp = foundInApp || null;
-    this.selectedCountry = ''; // Réinitialise le filtre de pays
+    this.selectedInApp = this.filteredInAppPurchases.find(inApp => inApp.id === inAppId) || null;
+    this.selectedInAppId = inAppId;
+    this.selectedCountry = '';
+    this.desiredPrice = this.selectedInApp?.desired_price;
     
-    if (this.selectedInApp) {
-      this.filterPrices(); // Applique le filtre immédiatement
-    } else {
-      this.dataSource.data = [];
-    }
+    // Force le recalcul des prix affichés
+    this.displayedPrices = this.selectedInApp ? [...this.selectedInApp.prices] : [];
+    this.updateDataSource();
   }
 
-/*
-  selectInApp(inAppId: string): void {
-    const foundInApp = this.inAppPurchases.find((inApp) => inApp.id === inAppId);
-    this.selectedInApp = foundInApp || null;
-
-    if (this.selectedInApp) {
-      this.displayedPrices = this.selectedInApp.prices;
-    } else {
-      this.displayedPrices = [];
-    }
-  }
-*/
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
   }
 
-  goHome(){
+  goHome(): void {
     this.router.navigateByUrl('/');
   }
 
-  // Mettez à jour les propriétés et méthodes existantes
-
   showAllInApps(): void {
-    this.selectedInApp = null;
-    this.selectedCountry = '';
-    
-    // Stockez les données complètes
     this.allPrices = this.filteredInAppPurchases.flatMap(inApp => 
       inApp.prices.map(price => ({
         ...price,
@@ -181,18 +155,61 @@ export class InAppPurchaseComponent implements OnInit {
         productId: inApp.productId
       }))
     );
-    
-    this.dataSource.data = this.allPrices;
+    this.displayedPrices = [...this.allPrices];
+    this.selectedCountry = '';
+    this.desiredPrice = undefined;
   }
 
-// Modifiez onInAppSelectionChange
-onInAppSelectionChange(): void {
-  if (this.selectedInAppId) {
-    this.selectInApp(this.selectedInAppId);
-  } else {
-    this.showAllInApps();
+  onInAppSelectionChange(): void {
+    if (this.selectedInAppId) {
+      const foundInApp = this.filteredInAppPurchases.find(inApp => inApp.id === this.selectedInAppId);
+      this.selectedInApp = foundInApp || null;
+      
+      if (this.selectedInApp) {
+        this.desiredPrice = this.selectedInApp.desired_price;
+        this.displayedPrices = [...this.selectedInApp.prices];
+      }
+    } else {
+      this.selectedInApp = null;
+      this.showAllInApps();
+    }
+    this.updateDataSource();
   }
-}
 
+  updateDesiredPrice(): void {
+    if (this.desiredPrice === undefined || this.desiredPrice <= 0 || !this.selectedInApp) {
+      return;
+    }
 
+    this.isUpdatingPrice = true;
+    this.appStoreService.updateDesiredPrice(
+      this.selectedInApp.id, 
+      this.desiredPrice
+    ).subscribe({
+      next: (updatedPrices: Price[]) => {
+        if (this.selectedInApp) {
+          this.selectedInApp.prices = updatedPrices;
+          this.selectedInApp.desired_price = this.desiredPrice;
+          this.filterPrices();
+        }
+        this.isUpdatingPrice = false;
+      },
+      error: (err) => {
+        console.error('Error updating price:', err);
+        this.isUpdatingPrice = false;
+      }
+    });
+  }
+
+  private updateDataSource(): void {
+    this.dataSource.data = [...this.displayedPrices];
+    if (this.sort) {
+      this.dataSource.sort = this.sort;
+    }
+    this.dataSource._updateChangeSubscription();
+  }
+
+  isPriceValid(): boolean {
+    return this.desiredPrice !== undefined && this.desiredPrice > 0;
+  }
 }

@@ -73,3 +73,74 @@ h3 {
 mat-card {
   margin: 16px 0;
 }
+/* Ajoutez ceci à votre fichier CSS */
+.desired-price-field {
+  width: 200px;
+  margin-right: 16px;
+}
+
+.submit-price-button {
+  margin-left: 16px;
+  height: 56px; /* Pour aligner avec les champs mat-form-field */
+}
+
+/* Pour l'affichage sur mobile */
+@media (max-width: 600px) {
+  .desired-price-field, .submit-price-button {
+    width: 100%;
+    margin: 8px 0;
+  }
+}
+.sticky-table-container {
+  position: relative;
+  min-height: 200px;
+}
+
+.no-data-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: #666;
+}
+
+.no-data-message mat-icon {
+  font-size: 48px;
+  height: 48px;
+  width: 48px;
+  margin-bottom: 16px;
+}
+
+.product-id {
+  font-size: 0.8em;
+  color: #666;
+  display: block;
+}
+
+.custom-badge {
+  color: #FF9800;
+  font-size: 18px;
+  vertical-align: middle;
+}
+
+.price-type {
+  text-transform: capitalize;
+}
+
+/* Amélioration du hover sur les lignes */
+.mat-row:hover {
+  background-color: #f5f5f5;
+}
+
+
+.no-data mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+}
+
+.table-container {
+  min-height: 200px;
+  position: relative;
+}

@@ -19,15 +19,17 @@ export class AuthService {
   login(email: string, password: string): Observable<boolean> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { email, password }).pipe(
       map(response => {
-        // Si la connexion réussit, vous pouvez stocker un token ici
-        if (response.token) {
-          localStorage.setItem('authToken', response.token);
+        // Modification pour gérer la réponse sans token
+        if (response.message === "Connexion réussie") {
+          // Stockez un token fictif ou implémentez JWT
+          localStorage.setItem('authToken', 'mock-token');
           return true;
         }
         return false;
       }),
       catchError(this.handleError)
     );
+  
   }
 
   register(email: string, password: string, name?: string): Observable<boolean> {
@@ -42,27 +44,15 @@ export class AuthService {
   }
 
   private handleError(error: HttpErrorResponse) {
-    let errorMessage = 'Une erreur inconnue est survenue';
+    console.error('Erreur complète:', error);
     
-    if (error.error instanceof ErrorEvent) {
-      // Erreur côté client
-      errorMessage = `Erreur : ${error.error.message}`;
-    } else {
-      // Erreur côté serveur
-      switch (error.status) {
-        case 400:
-          errorMessage = 'Données invalides';
-          break;
-        case 401:
-          errorMessage = 'Email ou mot de passe incorrect';
-          break;
-        case 500:
-          errorMessage = 'Erreur serveur. Veuillez réessayer plus tard.';
-          break;
-      }
+    let errorMessage = 'Une erreur est survenue';
+    if (error.error && error.error.error) {
+      errorMessage = error.error.error;
+    } else if (error.status === 0) {
+      errorMessage = 'Impossible de se connecter au serveur';
     }
     
-    console.error(errorMessage, error);
     return throwError(() => new Error(errorMessage));
   }
 

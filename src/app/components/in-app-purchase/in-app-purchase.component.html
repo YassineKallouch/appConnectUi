@@ -53,38 +53,53 @@
           </mat-form-field>
           <div class="mat-elevation-z8 sticky-table-container">
             <table mat-table [dataSource]="dataSource" matSort class="sticky-table">
-              
               <!-- Colonne Nom -->
-              <ng-container matColumnDef="name" sticky>
-                <th mat-header-cell *matHeaderCellDef>Nom</th>
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Nom</th>
                 <td mat-cell *matCellDef="let element">
                   {{ element.inAppName || selectedInApp?.name }}
-                  ({{ element.productId || selectedInApp?.productId }})
+                  <span class="product-id">({{ element.productId || selectedInApp?.productId }})</span>
                 </td>
               </ng-container>
           
               <!-- Colonne Pays -->
-              <ng-container matColumnDef="country" sticky>
-                <th mat-header-cell *matHeaderCellDef>Pays</th>
-                <td mat-cell *matCellDef="let element">{{ element.country }}</td>
+              <ng-container matColumnDef="country">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Pays</th>
+                <td mat-cell *matCellDef="let element">
+                  {{ element.country }}
+                </td>
               </ng-container>
           
               <!-- Colonne Prix client -->
-              <ng-container matColumnDef="customer_price" sticky>
-                <th mat-header-cell *matHeaderCellDef>Prix client</th>
-                <td mat-cell *matCellDef="let element">{{ element.customer_price }}</td>
+              <ng-container matColumnDef="customer_price">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Prix client</th>
+                <td mat-cell *matCellDef="let element">
+                  {{ element.customer_price | currency }}
+                  @if (element.is_custom) {
+                    <mat-icon class="custom-badge">star</mat-icon>
+                  }
+                </td>
               </ng-container>
           
               <!-- Colonne Type de prix -->
-              <ng-container matColumnDef="price_type" sticky>
-                <th mat-header-cell *matHeaderCellDef>Type</th>
-                <td mat-cell *matCellDef="let element">{{ element.price_type }}</td>
+              <ng-container matColumnDef="price_type">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
+                <td mat-cell *matCellDef="let element">
+                  <span class="price-type">{{ element.price_type }}</span>
+                </td>
               </ng-container>
           
-              <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
               <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
             </table>
-          </div>          
+          
+            @if (dataSource.data.length === 0) {
+              <div class="no-data-message">
+                <mat-icon>info</mat-icon>
+                <p>Sélectionnez un in-app</p>
+              </div>
+            }
+          </div>         
         </div>
       </mat-card-content>
     </mat-card>
