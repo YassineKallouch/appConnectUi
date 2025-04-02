@@ -46,8 +46,10 @@
             <mat-label>Pays</mat-label>
             <mat-select [(value)]="selectedCountry" (selectionChange)="filterPrices()">
               <mat-option value="">Tous les pays</mat-option>
-              @for (country of countries; track country) {
-                <mat-option [value]="country">{{ country }}</mat-option>
+              @for (country of countries; track country.code) {
+                <mat-option [value]="country.code">
+                  {{ country.name }} ({{ country.currency }})
+                </mat-option>
               }
             </mat-select>
           </mat-form-field>
@@ -66,18 +68,30 @@
               <ng-container matColumnDef="country">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Pays</th>
                 <td mat-cell *matCellDef="let element">
-                  {{ element.country }}
+                  {{ countryMap.get(element.country) || element.country }}
                 </td>
               </ng-container>
+              
+              <!-- Et pour le filtre : -->
+              <mat-form-field appearance="fill">
+                <mat-label>Pays</mat-label>
+                <mat-select [(value)]="selectedCountry" (selectionChange)="filterPrices()">
+                  <mat-option value="">Tous les pays</mat-option>
+                  @for (country of countries; track country.code) {
+                    <mat-option [value]="country.code">{{ country.name }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
           
               <!-- Colonne Prix client -->
               <ng-container matColumnDef="customer_price">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Prix client</th>
                 <td mat-cell *matCellDef="let element">
-                  {{ element.customer_price | currency }}
+                  {{ element.customer_price}}
                   @if (element.is_custom) {
                     <mat-icon class="custom-badge">star</mat-icon>
                   }
+                  <span class="currency">({{ getCurrency(element.country) }})</span>
                 </td>
               </ng-container>
           

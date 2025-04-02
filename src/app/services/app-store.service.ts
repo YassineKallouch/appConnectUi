@@ -21,41 +21,52 @@ interface InAppPurchase {
   prices: Price[];
 }
 
+interface Country {
+  code: string;
+  name: string;
+  currency: string;
+  currency_symbol?: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class AppStoreService {
-  private apiUrl = 'http://localhost:5000/api/inapp/all';
+  private baseUrl = 'http://localhost:5000/api';
 
   constructor(private http: HttpClient) {}
 
   // Récupère tous les achats in-app
   getAllInAppPurchases(): Observable<InAppPurchase[]> {
-    return this.http.get<InAppPurchase[]>(this.apiUrl);
+    return this.http.get<InAppPurchase[]>(`${this.baseUrl}/inapp/all`);
   }
 
   // Récupère les détails d'un achat in-app spécifique
   getInAppPurchaseDetails(inAppId: string): Observable<InAppPurchase> {
-    return this.http.get<InAppPurchase>(`${this.apiUrl}/${inAppId}`);
+    return this.http.get<InAppPurchase>(`${this.baseUrl}/${inAppId}`);
   }
 
   // Récupère tous les prix pour un pays spécifique
   getPricesByCountry(countryCode: string): Observable<Price[]> {
-    return this.http.get<Price[]>(`${this.apiUrl}/prices/${countryCode}`);
+    return this.http.get<Price[]>(`${this.baseUrl}/prices/${countryCode}`);
+  }
+
+  getCountries(): Observable<Country[]> {
+    return this.http.get<Country[]>(`${this.baseUrl}/countries`);
   }
 
   /*getAllCountries(): Observable<Price[]> {
-    return this.http.get<Price[]>(`${this.apiUrl}/api/countries`);
+    return this.http.get<Price[]>(`${this.baseUrl}/api/countries`);
   }
   */
 
   // Méthode pour synchroniser les données avec l'API App Store Connect
   syncDataWithAppStoreConnect(): Observable<any> {
-    return this.http.get(`${this.apiUrl}`);
+    return this.http.get(`${this.baseUrl}`);
   }
 
   updateDesiredPrice(inAppId: string, price: number): Observable<Price[]> {
-    return this.http.post<Price[]>(`${this.apiUrl}/inapp/update-price`, {
+    return this.http.post<Price[]>(`${this.baseUrl}/inapp/update-price`, {
       inAppId,
       desiredPrice: price
     });

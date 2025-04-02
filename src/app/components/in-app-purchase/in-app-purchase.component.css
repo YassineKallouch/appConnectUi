@@ -91,10 +91,6 @@ mat-card {
     margin: 8px 0;
   }
 }
-.sticky-table-container {
-  position: relative;
-  min-height: 200px;
-}
 
 .no-data-message {
   display: flex;
@@ -143,4 +139,15 @@ mat-card {
 .table-container {
   min-height: 200px;
   position: relative;
+}
+
+.currency {
+  font-size: 0.8em;
+  color: #666;
+  margin-left: 4px;
+}
+
+.product-id {
+  font-size: 0.8em;
+  color: #666;
 }

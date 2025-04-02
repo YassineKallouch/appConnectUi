@@ -30,6 +30,13 @@ interface InAppPurchase {
   desired_price?: number;
 }
 
+interface Country {
+  code: string;
+  name: string;
+  currency: string;
+  currency_symbol?: string;
+}
+
 @Component({
   selector: 'app-in-app-purchase',
   standalone: true,
@@ -51,7 +58,8 @@ export class InAppPurchaseComponent implements OnInit {
   inAppPurchases: InAppPurchase[] = [];
   filteredInAppPurchases: InAppPurchase[] = [];
   selectedInApp: InAppPurchase | null = null;
-  countries: string[] = ['USA', 'FRA', 'GBR', 'DEU', 'JPN', 'BEL', 'BRA', 'CHN', 'IND', 'RUS'];
+  countries: Country[] = [];
+  countryMap: Map<string, string> = new Map(); // Pour la conversion code -> nom
   selectedCountry: string = '';
   displayedPrices: Price[] = [];
   isLoading = false;
@@ -76,6 +84,7 @@ export class InAppPurchaseComponent implements OnInit {
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       this.appName = params['appName'];
+      this.loadCountries();
       this.loadInAppPurchases();
     });
   }
@@ -119,7 +128,7 @@ export class InAppPurchaseComponent implements OnInit {
     if (this.selectedInApp) {
       this.displayedPrices = this.selectedCountry
         ? this.selectedInApp.prices.filter(p => p.country === this.selectedCountry)
-        : [...this.selectedInApp.prices]; // Crée une nouvelle référence
+        : [...this.selectedInApp.prices];
     } else {
       this.displayedPrices = this.selectedCountry
         ? this.allPrices.filter(p => p.country === this.selectedCountry)
@@ -211,5 +220,22 @@ export class InAppPurchaseComponent implements OnInit {
 
   isPriceValid(): boolean {
     return this.desiredPrice !== undefined && this.desiredPrice > 0;
+  }
+
+  loadCountries(): void {
+    this.appStoreService.getCountries().subscribe({
+      next: (countries) => {
+        this.countries = countries;
+        this.countryMap = new Map(
+          countries.map(country => [country.code, country.name])
+        );
+      },
+      error: (err) => console.error('Erreur chargement pays:', err)
+    });
+  }
+
+  getCurrency(countryCode: string): string {
+    const country = this.countries.find(c => c.code === countryCode);
+    return country?.currency || '';
   }
 }
