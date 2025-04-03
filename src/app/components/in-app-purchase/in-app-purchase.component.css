@@ -1,153 +1,262 @@
-
-/* Conteneur principal du tableau */
-.table-container {
-  max-height: 500px;
-  overflow: auto;
-  border: 1px solid #e0e0e0;
-  margin-top: 16px;
+/* ========== GLOBAL STYLES ========== */
+:root {
+  --primary-color: #5c6bc0;
+  --primary-hover: #7e8de8;
+  --text-color: #2c3e50;
+  --light-gray: #f5f7fa;
+  --medium-gray: #e0e0e0;
+  --dark-gray: #757575;
+  --success-color: #66bb6a;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+  --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-/* Style de base du tableau */
+/* ========== TABLE STYLES ========== */
+.sticky-table-container {
+  max-height: 65vh;
+  overflow: auto;
+  margin: 24px 0;
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  background: white;
+}
+
 .mat-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* En-têtes avec style distinct mais qui défilent */
 .mat-header-row {
-  background-color: #f5f5f5; /* Couleur de fond */
-  position: sticky; /* Important pour annuler le sticky */
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: var(--light-gray);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
 .mat-header-cell {
-  font-weight: bold;
-  padding: 12px 16px;
-  color: rgba(0, 0, 0, 0.87);
-  border-bottom: 1px solid #e0e0e0;
+  font-weight: 600;
+  padding: 16px;
+  color: var(--text-color);
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
 }
 
-/* Cellules normales */
 .mat-cell {
-  padding: 8px 16px;
-  border-bottom: 1px solid #e0e0e0;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  color: var(--text-color);
+  transition: var(--transition);
 }
 
-/* Style alterné pour les lignes */
+.mat-row {
+  transition: var(--transition);
+}
+
 .mat-row:nth-child(even) {
-  background-color: #fafafa;
+  background-color: rgba(245, 247, 250, 0.5);
 }
 
-/* Vos autres styles existants */
+.mat-row:hover {
+  background-color: rgba(92, 107, 192, 0.05);
+  transform: translateY(-1px);
+}
+
+/* ========== FORM STYLES ========== */
 .inapp-list {
-  margin-bottom: 20px;
+  margin: 32px 0;
   display: flex;
   justify-content: center;
 }
 
 .inapp-list mat-form-field {
-  width: 50%;
-}
-.sticky-table-container {
-  max-height: 500px;
-  overflow: auto;
-  border: 1px solid #e0e0e0;
-  margin-top: 16px;
-}
-
-.mat-table {
   width: 100%;
+  max-width: 600px;
 }
 
-.mat-header-row {
-  background-color: #f5f5f5;
+.desired-price-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 32px auto;
+  padding: 24px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  max-width: 500px;
+  transition: var(--transition);
 }
 
-.inapp-list mat-form-field {
-  width: 50%;
+.desired-price-container:hover {
+  box-shadow: 0 6px 12px rgba(0,0,0,0.1);
 }
 
-h3 {
-  text-align: center;
-}
-
-mat-card {
-  margin: 16px 0;
-}
-/* Ajoutez ceci à votre fichier CSS */
 .desired-price-field {
-  width: 200px;
-  margin-right: 16px;
+  width: 100%;
+  max-width: 300px;
+  margin-bottom: 20px;
 }
 
 .submit-price-button {
-  margin-left: 16px;
-  height: 56px; /* Pour aligner avec les champs mat-form-field */
+  width: 100%;
+  max-width: 300px;
+  height: 56px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  border-radius: 8px;
+  transition: var(--transition);
 }
 
-/* Pour l'affichage sur mobile */
-@media (max-width: 600px) {
-  .desired-price-field, .submit-price-button {
-    width: 100%;
-    margin: 8px 0;
-  }
+.submit-price-button:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
+/* ========== CARD STYLES ========== */
+mat-card {
+  margin: 24px 0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  transition: var(--transition);
+}
+
+mat-card:hover {
+  box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+}
+
+.mat-card-header {
+  padding: 16px 24px;
+  background-color: var(--light-gray);
+}
+
+.mat-card-title {
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.mat-card-content {
+  padding: 24px;
+}
+
+/* ========== TYPOGRAPHY ========== */
+h3 {
+  text-align: center;
+  margin: 32px 0;
+  color: var(--text-color);
+  font-weight: 600;
+  font-size: 1.8rem;
+  letter-spacing: -0.5px;
+}
+
+.product-id {
+  font-size: 0.75rem;
+  color: var(--dark-gray);
+  margin-top: 4px;
+  font-family: 'Roboto Mono', monospace;
+}
+
+.currency {
+  font-size: 0.75rem;
+  color: var(--dark-gray);
+  margin-left: 4px;
+}
+
+.price-type {
+  text-transform: capitalize;
+  font-weight: 500;
+}
+
+/* ========== UTILITY STYLES ========== */
 .no-data-message {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 40px;
-  color: #666;
+  padding: 60px;
+  color: var(--dark-gray);
+  text-align: center;
 }
 
 .no-data-message mat-icon {
-  font-size: 48px;
-  height: 48px;
-  width: 48px;
-  margin-bottom: 16px;
+  font-size: 56px;
+  height: 56px;
+  width: 56px;
+  margin-bottom: 20px;
+  color: var(--medium-gray);
 }
 
-.product-id {
-  font-size: 0.8em;
-  color: #666;
-  display: block;
+/* ========== DARK THEME ========== */
+.dark-theme {
+  --text-color: #f5f5f5;
+  --light-gray: #424242;
+  --medium-gray: #616161;
 }
 
-.custom-badge {
-  color: #FF9800;
-  font-size: 18px;
-  vertical-align: middle;
+.dark-theme .mat-header-row,
+.dark-theme .mat-header-cell {
+  background-color: #303030;
+  color: rgba(255, 255, 255, 0.87);
 }
 
-.price-type {
-  text-transform: capitalize;
+.dark-theme .mat-row:nth-child(even) {
+  background-color: rgba(66, 66, 66, 0.5);
 }
 
-/* Amélioration du hover sur les lignes */
-.mat-row:hover {
-  background-color: #f5f5f5;
+.dark-theme .mat-row:hover {
+  background-color: rgba(92, 107, 192, 0.1);
 }
 
-
-.no-data mat-icon {
-  font-size: 48px;
-  width: 48px;
-  height: 48px;
+.dark-theme mat-card,
+.dark-theme .desired-price-container {
+  background-color: #424242;
+  color: white;
 }
 
-.table-container {
-  min-height: 200px;
-  position: relative;
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+  .sticky-table-container {
+    max-height: 55vh;
+  }
+  
+  .inapp-list mat-form-field,
+  .desired-price-field,
+  .submit-price-button {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .desired-price-container {
+    margin: 24px 16px;
+    padding: 20px;
+  }
+  
+  h3 {
+    font-size: 1.5rem;
+    margin: 24px 0;
+  }
 }
 
-.currency {
-  font-size: 0.8em;
-  color: #666;
-  margin-left: 4px;
+/* ========== ANIMATIONS ========== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.product-id {
-  font-size: 0.8em;
-  color: #666;
+.mat-row {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+mat-icon {
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+mat-icon:hover {
+  color: var(--primary-color);
+  transform: scale(1.1);
 }

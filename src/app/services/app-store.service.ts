@@ -1,4 +1,5 @@
-import { HttpClient } from '@angular/common/http';
+import { FF_EQUALS } from '@angular/cdk/keycodes';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
@@ -9,6 +10,8 @@ interface Price {
   customer_price: number;
   price_type: string;
   proceeds: number;
+  desired_price?: number;
+  is_custom?: boolean;
 }
 
 interface InAppPurchase {
@@ -66,9 +69,14 @@ export class AppStoreService {
   }
 
   updateDesiredPrice(inAppId: string, price: number): Observable<Price[]> {
-    return this.http.post<Price[]>(`${this.baseUrl}/inapp/update-price`, {
-      inAppId,
-      desiredPrice: price
-    });
+    return this.http.patch<Price[]>(
+      `${this.baseUrl}/inapp/update-desired-price`,
+      { inAppId, desiredPrice: price },
+      {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json'
+        }),
+      },
+    );
   }
 }
