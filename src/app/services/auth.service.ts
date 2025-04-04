@@ -1,7 +1,10 @@
-import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+
+
 
 interface LoginResponse {
   message: string;
@@ -14,14 +17,22 @@ interface LoginResponse {
 export class AuthService {
   private apiUrl = 'http://localhost:5000/api/auth';
 
-  constructor(private http: HttpClient) { }
+  private isBrowser: boolean;
+
+
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) { 
+    this.isBrowser = isPlatformBrowser(platformId);
+
+  }
+
 
   login(email: string, password: string): Observable<boolean> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { email, password }).pipe(
       map(response => {
-        // Modification pour gérer la réponse sans token
-        if (response.message === "Connexion réussie") {
-          // Stockez un token fictif ou implémentez JWT
+        if (response.message === "Connexion réussie" && this.isBrowser) {
           localStorage.setItem('authToken', 'mock-token');
           return true;
         }
@@ -29,7 +40,6 @@ export class AuthService {
       }),
       catchError(this.handleError)
     );
-  
   }
 
   register(email: string, password: string, name?: string): Observable<boolean> {
@@ -57,12 +67,12 @@ export class AuthService {
   }
 
   logout() {
-    // Supprime le token et déconnecte l'utilisateur
-    localStorage.removeItem('authToken');
+    if (this.isBrowser) {
+      localStorage.removeItem('authToken');
+    }
   }
 
   isLoggedIn(): boolean {
-    // Vérifie si un token existe
-    return !!localStorage.getItem('authToken');
+    return this.isBrowser ? !!localStorage.getItem('authToken') : false;
   }
 }

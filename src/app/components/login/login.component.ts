@@ -9,7 +9,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from '../../services/auth.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -40,6 +40,7 @@ export class LoginComponent {
   constructor(
     private authService: AuthService,
     private router: Router,
+    private route: ActivatedRoute, // <-- Ajoutez ceci
     private snackBar: MatSnackBar
   ) {}
 
@@ -47,15 +48,17 @@ export class LoginComponent {
     if (this.loginForm.valid) {
       this.isLoading = true;
       
-      // Utilisez une assertion non-null ou des valeurs par défaut
       const email = this.loginForm.get('email')?.value || '';
       const password = this.loginForm.get('password')?.value || '';
-
+  
       this.authService.login(email, password).subscribe({
         next: (success) => {
           if (success) {
             this.snackBar.open('Connexion réussie', 'Fermer', { duration: 3000 });
-            this.router.navigate(['/dashboard']);
+            
+            // Récupère l'URL de redirection ou utilise '/'
+            const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+            this.router.navigateByUrl(returnUrl);
           } else {
             this.showError('Échec de la connexion');
           }
@@ -69,7 +72,6 @@ export class LoginComponent {
       });
     }
   }
-
   private showError(message: string) {
     this.snackBar.open(message, 'Fermer', { 
       duration: 5000,

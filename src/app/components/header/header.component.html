@@ -1,0 +1,11 @@
+<header>
+    <!-- Contenu du header existant -->
+  
+    @if (showLogout) {
+      <button mat-button (click)="logout()" class="logout-button">
+        <mat-icon>logout</mat-icon>
+        Déconnexion
+      </button>
+    }
+  </header>
+  

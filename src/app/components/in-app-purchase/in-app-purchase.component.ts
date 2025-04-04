@@ -12,6 +12,7 @@ import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatInputModule } from '@angular/material/input';
 import { MatButton, MatButtonModule } from '@angular/material/button';
+import { HeaderComponent } from '../header/header.component';
 
 interface Price {
   country: string;
@@ -54,7 +55,8 @@ interface Country {
     MatIcon,
     MatProgressSpinnerModule,
     MatInputModule,
-    MatButtonModule
+    MatButtonModule,
+    HeaderComponent
   ],
   templateUrl: './in-app-purchase.component.html',
   styleUrls: ['./in-app-purchase.component.css']
