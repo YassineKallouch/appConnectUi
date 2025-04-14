@@ -1,10 +1,4 @@
-<mat-icon 
-  aria-hidden="false" 
-  aria-label="Retour à l'accueil" 
-  fontIcon="home" 
-  (click)="goHome()"
-  style="cursor: pointer;">
-</mat-icon>
+<app-navigation></app-navigation>
 <app-header></app-header>
 <div class="container">
   <h3>Achats In-App</h3>
@@ -22,27 +16,7 @@
       </mat-select>
     </mat-form-field>
   </div>
-  <div class="desired-price-container" >
-    <mat-form-field appearance="outline" class="desired-price-field">
-      <input 
-        type="number" 
-        matInput 
-        placeholder="Prix souhaité" 
-        [(ngModel)]="globalDesiredPrice"
-        min="0"
-        step="0.01">
-    </mat-form-field>
-    
-    <button 
-      mat-raised-button 
-      color="primary" 
-      class="submit-price-button"
-      (click)="applyDesiredPriceToAll()"
-      [disabled]="!globalDesiredPrice || globalDesiredPrice <= 0"
-      >
-      Appliquer à tous
-    </button>
-  </div>
+
   <div class="inapp-details">
     <mat-card>
       @if (selectedInApp) {
@@ -54,15 +28,10 @@
           <p><strong>Bundle ID:</strong> {{ selectedInApp.bundle_id }}</p>
           <p><strong>Type:</strong> {{ selectedInApp.type }}</p>
         </mat-card-content>
-      } @else if (dataSource.data.length > 0) {
-        <mat-card-header>
-          <mat-card-title>Tous les achats in-app</mat-card-title>
-        </mat-card-header>
-      }
-
-      <mat-card-content>
+      } 
+      @else if (dataSource.data.length > 0) {
         <div class="prices">
-          <!--<mat-form-field appearance="fill">
+          <mat-form-field appearance="fill">
             <mat-label>Pays</mat-label>
             <mat-select [(value)]="selectedCountry" (selectionChange)="filterPrices()">
               <mat-option value="">Tous les pays</mat-option>
@@ -72,7 +41,15 @@
                 </mat-option>
               }
             </mat-select>
-          </mat-form-field> -->
+          </mat-form-field> 
+        </div>
+      }
+      
+
+      <mat-card-content>
+        <div class="prices">
+          
+
           <div class="mat-elevation-z8 sticky-table-container">
             <table mat-table [dataSource]="dataSource" matSort class="sticky-table">
               <!-- Colonne Nom -->
@@ -91,41 +68,31 @@
                   {{ countryMap.get(element.country) || element.country }}
                 </td>
               </ng-container>
-              
-              <!-- Et pour le filtre : -->
-              <mat-form-field appearance="fill">
-                <mat-label>Pays</mat-label>
-                <mat-select [(value)]="selectedCountry" (selectionChange)="filterPrices()">
-                  <mat-option value="">Tous les pays</mat-option>
-                  @for (country of countries; track country.code) {
-                    <mat-option [value]="country.code">{{ country.name }}</mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
           
               <!-- Colonne Prix client -->
               <ng-container matColumnDef="customer_price">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Prix client</th>
                 <td mat-cell *matCellDef="let element">
-                  {{ element.customer_price}}
-                  
+                  {{ element.customer_price }}
                   <span class="currency">({{ getCurrency(element.country) }})</span>
                 </td>
               </ng-container>
           
+              <!-- Colonne Prix souhaité -->
               <ng-container matColumnDef="desired_price">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Prix souhaité</th>
                 <td mat-cell *matCellDef="let element">
-                  @if (element.desired_price != null) {
-                    {{ element.desired_price | number:'1.2-2' }}
-                    <span class="currency">({{ getCurrency(element.country) }})</span>
-                  } @else {
-                    -
-                  }
+                  <input 
+                    type="number" 
+                    class="custom-price-input"
+                    placeholder="..." 
+                    [(ngModel)]="element.desired_price"
+                    min="0"
+                    step="0.01">
+                  <span class="currency">({{ getCurrency(element.country) }})</span>
                 </td>
               </ng-container>
-              
-
+          
               <!-- Colonne Type de prix -->
               <ng-container matColumnDef="price_type">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>Type</th>
@@ -136,7 +103,7 @@
           
               <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
               <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-              </table>
+            </table>
           
             @if (dataSource.data.length === 0) {
               <div class="no-data-message">
@@ -144,7 +111,18 @@
                 <p>Sélectionnez un in-app</p>
               </div>
             }
-          </div>         
+          </div>
+
+          <div class="submit-all-container">
+            <button 
+              mat-raised-button 
+              color="primary" 
+              class="submit-all-button"
+              (click)="submitAllPriceChanges()"
+              [disabled]="!hasPriceChanges()">
+              Appliquer tous les changements
+            </button>
+          </div>
         </div>
       </mat-card-content>
     </mat-card>

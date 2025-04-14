@@ -1,0 +1,28 @@
+<div class="navigation-container">
+    <button mat-button [matMenuTriggerFor]="appsMenu">
+      <mat-icon>apps</mat-icon>
+      Applications
+    </button>
+    
+    <mat-menu #appsMenu="matMenu">
+      @if (isLoading) {
+        <button mat-menu-item disabled>
+          <mat-icon>hourglass_empty</mat-icon>
+          Chargement...
+        </button>
+      } @else {
+        @for (app of availableApps; track app.id) {
+          <button mat-menu-item (click)="navigateToApp(app)">
+            {{ app.name }}
+          </button>
+        }
+      }
+      
+      <mat-divider></mat-divider>
+      
+      <button mat-menu-item (click)="goHome()">
+        <mat-icon>home</mat-icon>
+        Accueil
+      </button>
+    </mat-menu>
+  </div>

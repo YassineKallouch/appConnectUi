@@ -1,10 +1,8 @@
-import { FF_EQUALS } from '@angular/cdk/keycodes';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { distinctUntilChanged, map } from 'rxjs/operators';
 
-// Vous pouvez déplacer ces interfaces dans un fichier séparé 
-// (par exemple models/app-store.model.ts) et les importer ici
 interface Price {
   country: string;
   customer_price: number;
@@ -31,6 +29,12 @@ interface Country {
   currency_symbol?: string;
 }
 
+export interface App {
+  id: string;
+  name: string;
+  bundle_id?: string; // Optionnel si vous voulez garder cette info
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -39,17 +43,35 @@ export class AppStoreService {
 
   constructor(private http: HttpClient) {}
 
-  // Récupère tous les achats in-app
+  // Récupère les applications disponibles (version optimisée)
+  getAvailableApps(): Observable<App[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/db/apps`).pipe(
+      map(apps => {
+        // Utilisation d'un Map pour éliminer les doublons par app_name
+        const uniqueApps = new Map<string, App>();
+        apps.forEach(app => {
+          if (app.app_name && !uniqueApps.has(app.app_name)) {
+            uniqueApps.set(app.app_name, {
+              id: app.app_id,
+              name: app.app_name,
+              bundle_id: app.bundle_id
+            });
+          }
+        });
+        return Array.from(uniqueApps.values());
+      }),
+      distinctUntilChanged()
+    );
+  }
+
   getAllInAppPurchases(): Observable<InAppPurchase[]> {
     return this.http.get<InAppPurchase[]>(`${this.baseUrl}/inapp/all`);
   }
 
-  // Récupère les détails d'un achat in-app spécifique
   getInAppPurchaseDetails(inAppId: string): Observable<InAppPurchase> {
     return this.http.get<InAppPurchase>(`${this.baseUrl}/${inAppId}`);
   }
 
-  // Récupère tous les prix pour un pays spécifique
   getPricesByCountry(countryCode: string): Observable<Price[]> {
     return this.http.get<Price[]>(`${this.baseUrl}/prices/${countryCode}`);
   }
@@ -58,12 +80,6 @@ export class AppStoreService {
     return this.http.get<Country[]>(`${this.baseUrl}/countries`);
   }
 
-  /*getAllCountries(): Observable<Price[]> {
-    return this.http.get<Price[]>(`${this.baseUrl}/api/countries`);
-  }
-  */
-
-  // Méthode pour synchroniser les données avec l'API App Store Connect
   syncDataWithAppStoreConnect(): Observable<any> {
     return this.http.get(`${this.baseUrl}`);
   }
@@ -72,6 +88,18 @@ export class AppStoreService {
     return this.http.patch<Price[]>(
       `${this.baseUrl}/inapp/update-desired-price`,
       { inAppId, desiredPrice: price },
+      {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json'
+        }),
+      },
+    );
+  }
+
+  updateMultipleDesiredPrices(inAppId: string, changes: Array<{country: string, desired_price: number}>): Observable<Price[]> {
+    return this.http.patch<Price[]>(
+      `${this.baseUrl}/inapp/update-multiple-desired-prices`,
+      { inAppId, changes },
       {
         headers: new HttpHeaders({
           'Content-Type': 'application/json'
