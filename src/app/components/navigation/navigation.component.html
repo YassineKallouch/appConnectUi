@@ -13,12 +13,19 @@
       } @else {
         @for (app of availableApps; track app.id) {
           <button mat-menu-item (click)="navigateToApp(app)">
-            {{ app.name }}
+            <span class="menu-item-content">
+              {{ app.name }}
+              @if (isCurrentApp(app)) {
+                <mat-icon class="selected-icon">check</mat-icon>
+              }
+            </span>
           </button>
         }
       }
       
       <mat-divider></mat-divider>
+      
+      
       
       <button mat-menu-item (click)="goHome()">
         <mat-icon>home</mat-icon>

@@ -1,32 +1,58 @@
 .navigation-container {
-    position: fixed;
-    top: 16px;
-    left: 16px;
-    z-index: 1000;
-  }
-  
-  .navigation-container button[mat-button] {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background-color: rgba(255, 255, 255, 0.9);
-    border-radius: 20px;
-    padding: 0 16px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
-    border: 1px solid #e0e0e0;
-  }
-  
-  .navigation-container button[mat-button]:hover {
-    background-color: #5c6bc0;
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  }
-  
-  .navigation-container .mat-menu-item {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 1000;
+}
+
+.navigation-container button[mat-button] {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 20px;
+  padding: 0 16px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+  border: 1px solid #e0e0e0;
+}
+
+.navigation-container button[mat-button]:hover {
+  background-color: #5c6bc0;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.navigation-container .mat-menu-item {
     display: flex;
     align-items: center;
     gap: 8px;
     min-width: 200px;
+    max-width: 300px;
+    overflow: visible; 
+  }
+  
+  .menu-item-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    min-width: 0;
+  }
+  
+  .app-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-grow: 1;
+    min-width: 0;
+  }
+  
+  .selected-icon {
+    flex-shrink: 0;
+    margin-left: 8px;
+    color: #3f51b5;
+    font-weight: bold;
+    font-size: 18px;
   }
