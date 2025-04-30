@@ -1,17 +1,20 @@
-<div class="navigation-container">
-    <button mat-button [matMenuTriggerFor]="appsMenu">
+<div class="side-nav-container">
+  <div class="side-nav-header">
+    <button mat-icon-button [matMenuTriggerFor]="appsMenu">
       <mat-icon>apps</mat-icon>
-      Applications
     </button>
     
+    <!-- Affichage du nom de l'application actuelle -->
+    @if(currentAppName) {
+      <span class="current-app-display" >{{ currentAppName }}</span>
+    }
     <mat-menu #appsMenu="matMenu">
       @if (isLoading) {
         <button mat-menu-item disabled>
-          <mat-icon>hourglass_empty</mat-icon>
-          Chargement...
+          <mat-icon>hourglass_empty</mat-icon> Chargement...
         </button>
       } @else {
-        @for (app of availableApps; track app.id) {
+        @for (app of availableApps; track app.name) {
           <button mat-menu-item (click)="navigateToApp(app)">
             <span class="menu-item-content">
               {{ app.name }}
@@ -21,15 +24,58 @@
             </span>
           </button>
         }
+        
+        <mat-divider></mat-divider>
+        
+        <button mat-menu-item (click)="goHome()">
+          <mat-icon>home</mat-icon> Home
+        </button>
       }
-      
-      <mat-divider></mat-divider>
-      
-      
-      
-      <button mat-menu-item (click)="goHome()">
-        <mat-icon>home</mat-icon>
-        Accueil
-      </button>
     </mat-menu>
   </div>
+  
+  @if (currentAppName) {
+    <div class="side-nav-tabs">
+      <button
+        mat-button
+        class="side-tab"
+        [class.active]="selectedView === 'description'"
+        (click)="selectedView = 'description'; onViewChange()"
+      >
+        Description
+      </button>
+      <button
+        mat-button
+        class="side-tab"
+        [class.active]="selectedView === 'in-app'"
+        (click)="selectedView = 'in-app'; onViewChange()"
+      >
+        In-app purchases
+      </button>
+      <button
+        mat-button
+        class="side-tab"
+        [class.active]="selectedView === 'subscription'"
+        (click)="selectedView = 'subscription'; onViewChange()"
+      >
+        Subscriptions
+      </button>
+      <button
+        mat-button
+        class="side-tab"
+        [class.active]="selectedView === 'availability'"
+        (click)="selectedView = 'availability'; onViewChange()"
+      >
+        Availability
+      </button>
+      <button
+        mat-button
+        class="side-tab"
+        [class.active]="selectedView === 'pricing'"
+        (click)="selectedView = 'pricing'; onViewChange()"
+      >
+        Pricing
+      </button>
+    </div>
+  }
+</div>

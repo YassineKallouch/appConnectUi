@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { distinctUntilChanged, map } from 'rxjs/operators';
+import { distinctUntilChanged, map, tap } from 'rxjs/operators';
 
 interface Price {
   country: string;
@@ -16,11 +16,27 @@ interface InAppPurchase {
   id: string;
   app_name: string;
   bundle_id: string;
-  name: string;
+  name: string; 
   productId: string;
   type: string;
   prices: Price[];
 }
+
+interface SubscriptionPrice {
+  territory: string;
+  currency: string;
+  customerPrice: number;
+  desired_price?: number;
+}
+
+interface Subscription {
+  id: number;
+  name: string;
+  productId: string;
+  subscriptionPeriod: string;
+  prices: SubscriptionPrice[];
+}
+
 
 interface Country {
   code: string;
@@ -32,17 +48,18 @@ interface Country {
 export interface App {
   id: string;
   name: string;
-  bundle_id?: string; // Optionnel si vous voulez garder cette info
+  bundle_id?: string;
 }
+
 
 @Injectable({
   providedIn: 'root',
 })
 export class AppStoreService {
   private baseUrl = 'http://localhost:5000/api';
-
+  
   constructor(private http: HttpClient) {}
-
+  
   // Récupère les applications disponibles (version optimisée)
   getAvailableApps(): Observable<App[]> {
     return this.http.get<any[]>(`${this.baseUrl}/db/apps`).pipe(
@@ -63,40 +80,16 @@ export class AppStoreService {
       distinctUntilChanged()
     );
   }
-
+  
   getAllInAppPurchases(): Observable<InAppPurchase[]> {
     return this.http.get<InAppPurchase[]>(`${this.baseUrl}/inapp/all`);
   }
-
-  getInAppPurchaseDetails(inAppId: string): Observable<InAppPurchase> {
-    return this.http.get<InAppPurchase>(`${this.baseUrl}/${inAppId}`);
-  }
-
-  getPricesByCountry(countryCode: string): Observable<Price[]> {
-    return this.http.get<Price[]>(`${this.baseUrl}/prices/${countryCode}`);
-  }
-
+    
   getCountries(): Observable<Country[]> {
     return this.http.get<Country[]>(`${this.baseUrl}/countries`);
   }
-
-  syncDataWithAppStoreConnect(): Observable<any> {
-    return this.http.get(`${this.baseUrl}`);
-  }
-
-  updateDesiredPrice(inAppId: string, price: number): Observable<Price[]> {
-    return this.http.patch<Price[]>(
-      `${this.baseUrl}/inapp/update-desired-price`,
-      { inAppId, desiredPrice: price },
-      {
-        headers: new HttpHeaders({
-          'Content-Type': 'application/json'
-        }),
-      },
-    );
-  }
-
-  updateMultipleDesiredPrices(inAppId: string, changes: Array<{country: string, desired_price: number}>): Observable<Price[]> {
+  
+  updateMultipleDesiredPricesInApp(inAppId: string, changes: Array<{country: string, desired_price: number}>): Observable<Price[]> {
     return this.http.patch<Price[]>(
       `${this.baseUrl}/inapp/update-multiple-desired-prices`,
       { inAppId, changes },
@@ -107,4 +100,25 @@ export class AppStoreService {
       },
     );
   }
+
+  getAllSubscriptions(): Observable<Subscription[]> {
+    return this.http.get<Subscription[]>(`${this.baseUrl}/subscriptions`);
+  }
+  
+  updateMultipleDesiredPricesSubscription(subscriptionId: number, changes: Array<{country: string, desired_price: number}>): Observable<SubscriptionPrice[]> {
+    return this.http.patch<SubscriptionPrice[]>(
+      `${this.baseUrl}/subscriptions/update-multiple-desired-prices`,
+      { subscriptionId, changes },
+      {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json'
+        }),
+      },
+    );
+  }
+  setCredentials(credentials: { userId: string; issuerId: string; apiKey: string }): Observable<any> {
+    return this.http.post(`${this.baseUrl}/set-credentials`, credentials);
+  }
 }
+  
+

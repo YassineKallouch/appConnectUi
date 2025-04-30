@@ -1,0 +1,14 @@
+.page-layout {
+    display: flex;
+    height: 100%; /* ou 100vh si tu veux pleine hauteur */
+  }
+  
+  app-navigation {
+    width: 250px; /* ou la largeur que tu veux pour ta nav */
+    flex-shrink: 0;
+  }
+  
+  .page-content {
+    flex: 1;
+    padding: 20px;
+  }

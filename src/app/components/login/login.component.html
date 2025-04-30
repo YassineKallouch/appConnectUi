@@ -1,7 +1,7 @@
 <div class="login-container">
     <mat-card class="login-card">
       <mat-card-header class="login-header">
-        <mat-card-title class="login-title">Connexion</mat-card-title>
+        <mat-card-title class="login-title">Connection</mat-card-title>
       </mat-card-header>
   
       <mat-card-content>
@@ -18,16 +18,16 @@
             >
             <mat-icon matSuffix>alternate_email</mat-icon>
             @if (loginForm.get('email')?.hasError('required')) {
-              <mat-error>L'email est obligatoire</mat-error>
+              <mat-error>Email required</mat-error>
             }
             @if (loginForm.get('email')?.hasError('email')) {
-              <mat-error>Format d'email invalide</mat-error>
+              <mat-error>Invalid email format</mat-error>
             }
           </mat-form-field>
   
           <!-- Mot de passe -->
           <mat-form-field appearance="fill" class="full-width">
-            <mat-label>Mot de passe</mat-label>
+            <mat-label>Password</mat-label>
             <input 
               matInput 
               formControlName="password" 
@@ -51,7 +51,7 @@
               </mat-icon>
             </button>
             @if (loginForm.get('password')?.hasError('required')) {
-              <mat-error>Le mot de passe est obligatoire</mat-error>
+              <mat-error>Password required</mat-error>
             }
           </mat-form-field>
   
@@ -64,7 +64,7 @@
             [disabled]="!loginForm.valid || isLoading"
           >
             @if (!isLoading) {
-              <span>Se connecter</span>
+              <span>Log in</span>
             }
             @if (isLoading) {
               <mat-spinner diameter="20"></mat-spinner>
@@ -72,9 +72,9 @@
           </button>
   
           <!-- Lien mot de passe oublié -->
-          <div class="forgot-password">
+          <!--<div class="forgot-password">
             <a mat-button color="accent" routerLink="/reset-password">Mot de passe oublié ?</a>
-          </div>
+          </div>-->
         </form>
       </mat-card-content>
   
@@ -82,8 +82,8 @@
   
       <!-- Inscription -->
       <mat-card-actions class="login-footer">
-        <span>Nouveau ici ?</span>
-        <a mat-button color="primary" routerLink="/register">Créer un compte</a>
+        <span>New here ?</span>
+        <a mat-button color="primary" routerLink="/register">Create account</a>
       </mat-card-actions>
     </mat-card>
   </div>

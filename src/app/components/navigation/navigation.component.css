@@ -1,58 +1,68 @@
-.navigation-container {
-  position: fixed;
-  top: 16px;
-  left: 16px;
-  z-index: 1000;
+.side-nav-container { 
+  display: flex; 
+  flex-direction: column;
+  width: 270px; 
+  height: 100%;
+  background-color: #f4f5fa; 
+  border-right: 1px solid #ddd; 
+  position: sticky;
+  top: 0;
+} 
+ 
+.side-nav-header { 
+  display: flex; 
+  align-items: center; 
+  padding: 16px; 
+  border-bottom: 1px solid #ddd; 
+  background-color: #f4f5fa; 
+} 
+ 
+.side-nav-tabs { 
+  display: flex; 
+  flex-direction: column;
+  padding: 10px 0;
+} 
+ 
+.side-tab { 
+  justify-content: flex-start; 
+  text-align: left; 
+  padding: 12px 24px; 
+  border-radius: 0; 
+  font-size: 16px; 
+  color: #333; 
+  font-weight: 500; 
+} 
+ 
+.side-tab:hover { 
+  background-color: #e3e7ff; 
+} 
+ 
+.side-tab.active { 
+  background-color: #7a89e0; 
+  color: white; 
+} 
+ 
+.menu-item-content { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  width: 100%; 
+} 
+ 
+.selected-icon { 
+  color: #000000; 
+  margin-left: 8px; 
 }
 
-.navigation-container button[mat-button] {
+
+
+.page-layout {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  background-color: rgba(255, 255, 255, 0.9);
-  border-radius: 20px;
-  padding: 0 16px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  transition: all 0.3s ease;
-  border: 1px solid #e0e0e0;
+  min-height: 100vh;
 }
 
-.navigation-container button[mat-button]:hover {
-  background-color: #5c6bc0;
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
 
-.navigation-container .mat-menu-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    min-width: 200px;
-    max-width: 300px;
-    overflow: visible; 
-  }
-  
-  .menu-item-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    min-width: 0;
-  }
-  
-  .app-name {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    flex-grow: 1;
-    min-width: 0;
-  }
-  
-  .selected-icon {
-    flex-shrink: 0;
-    margin-left: 8px;
-    color: #3f51b5;
-    font-weight: bold;
-    font-size: 18px;
-  }
+app-navigation {
+  display: flex;
+  height: 100vh;
+}

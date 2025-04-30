@@ -1,0 +1,39 @@
+<div class="container">
+    <div class="form-container mat-elevation-z8">
+      <h2 class="form-title">Configuring API keys</h2>
+      <p class="form-subtitle">Please enter your App Store Connect details</p>
+  
+      <form [formGroup]="keyForm" (ngSubmit)="onSubmit()" class="key-form">
+        <!-- User ID Field -->
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>User ID</mat-label>
+          <input matInput formControlName="userId" placeholder="Votre User ID" required>
+          <mat-icon matSuffix>person</mat-icon>
+        </mat-form-field>
+  
+        <!-- Issuer ID Field -->
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>Issuer ID</mat-label>
+          <input matInput formControlName="issuerId" placeholder="Votre Issuer ID" required>
+          <mat-icon matSuffix>verified_user</mat-icon>
+        </mat-form-field>
+  
+        <!-- API Key Field -->
+        <mat-form-field appearance="outline" class="form-field">
+          <mat-label>API key</mat-label>
+          <textarea matInput formControlName="apiKey" placeholder="Votre clé API" required
+                    rows="4"></textarea>
+          <mat-icon matSuffix>vpn_key</mat-icon>
+        </mat-form-field>
+  
+        <div class="form-actions">
+          <button mat-raised-button color="primary" type="submit" [disabled]="!keyForm.valid">
+            <mat-icon>check_circle</mat-icon>
+            Submit
+          </button>
+          
+        </div>
+      </form>
+    </div>
+  </div>
+  <app-header></app-header>

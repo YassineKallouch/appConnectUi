@@ -11,9 +11,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatInputModule } from '@angular/material/input';
-import { MatButton, MatButtonModule } from '@angular/material/button';
+import { MatButtonModule } from '@angular/material/button';
 import { HeaderComponent } from '../header/header.component';
-import { NavigationComponent } from '../navigation/navigation.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 interface Price {
   country: string;
@@ -59,23 +59,32 @@ interface Country {
     MatProgressSpinnerModule,
     MatInputModule,
     MatButtonModule,
-    HeaderComponent,
-    NavigationComponent,
+    MatCheckboxModule,
+    HeaderComponent
   ],
   templateUrl: './in-app-purchase.component.html',
   styleUrls: ['./in-app-purchase.component.css']
 })
 export class InAppPurchaseComponent implements OnInit {
+
+  isCountryFilterVisible: boolean = false;
+  
   inAppPurchases: InAppPurchase[] = [];
   filteredInAppPurchases: InAppPurchase[] = [];
   selectedInApp: InAppPurchase | null = null;
   countries: Country[] = [];
   countryMap: Map<string, string> = new Map();
-  selectedCountry: string = '';
+  selectedCountries: string[] = [];
+  selectedType: string = '';
+  selectedPriceType: string = '';
+  inAppTypes: string[] = [];
+  priceTypes: string[] = [];
   displayedPrices: Price[] = [];
   isLoading = false;
   isUpdatingPrice = false;
   syncStatus = '';
+  showSuccessMessage = false;
+  successMessage = "Prices updated successfully";
 
   displayedColumns: string[] = ['name', 'country', 'customer_price', 'desired_price', 'price_type'];
   dataSource = new MatTableDataSource<Price>([]);
@@ -83,7 +92,8 @@ export class InAppPurchaseComponent implements OnInit {
   private originalPrices: Price[] = [];
 
   @ViewChild(MatSort) sort!: MatSort;
-  selectedInAppId: string | null = null;
+
+  selectedInAppIds: string[] = [];
   
   appName: string = '';
 
@@ -96,21 +106,26 @@ export class InAppPurchaseComponent implements OnInit {
   ngOnInit(): void {
     this.initializeDataSource();
     this.route.params.subscribe(params => {
-      // Réinitialiser l'état du composant à chaque changement d'application
       this.appName = params['appName'];
-      this.selectedInAppId = null;
+      this.selectedInAppIds = [];
       this.selectedInApp = null;
       this.displayedPrices = [];
       this.dataSource.data = [];
       this.allPrices = [];
       this.originalPrices = [];
-      this.selectedCountry = '';
-      
-      // Ensuite charger les nouvelles données
+      this.selectedCountries = [];
+      this.selectedType = '';
+      this.selectedPriceType = '';
+      this.isCountryFilterVisible = false;
       this.loadCountries();
       this.loadInAppPurchases();
     });
   }
+
+  toggleCountryFilterVisibility(): void {
+    this.isCountryFilterVisible = !this.isCountryFilterVisible;
+  }
+
   private initializeDataSource() {
     this.dataSource.sortingDataAccessor = (data: Price, sortHeaderId: string) => {
       switch (sortHeaderId) {
@@ -123,6 +138,7 @@ export class InAppPurchaseComponent implements OnInit {
       }
     };
   }
+
   loadInAppPurchases(): void {
     this.isLoading = true;
     this.appStoreService.getAllInAppPurchases().subscribe({
@@ -135,7 +151,10 @@ export class InAppPurchaseComponent implements OnInit {
           return;
         }
 
-        this.filterInAppPurchases();
+        this.filterInAppPurchases();              
+        this.inAppTypes = [...new Set(this.filteredInAppPurchases.map(inApp => inApp.type))];               
+        this.showAllInApps();       
+        this.extractPriceTypes();        
         this.isLoading = false;
       },
       error: (err) => {
@@ -146,48 +165,139 @@ export class InAppPurchaseComponent implements OnInit {
     });
   }
 
+  extractPriceTypes(): void {
+    // Extraire tous les types de prix uniques
+    const allPriceTypes = new Set<string>();
+    this.filteredInAppPurchases.forEach(inApp => {
+      inApp.prices.forEach(price => {
+        if (price.price_type) {
+          allPriceTypes.add(price.price_type);
+        }
+      });
+    });
+    this.priceTypes = [...allPriceTypes];
+  }
+
   filterInAppPurchases(): void {
     if (!this.appName) return;
-
     this.filteredInAppPurchases = this.inAppPurchases.filter(
       (inApp) => inApp.app_name === this.appName
     );
-
-    //if (this.filteredInAppPurchases.length > 0) {
-    //  this.showAllInApps();
-    //}
   }
 
-  filterPrices(): void {
-    if (this.selectedInApp) {
-      this.displayedPrices = this.selectedCountry
-        ? this.selectedInApp.prices.filter(p => p.country === this.selectedCountry)
-        : [...this.selectedInApp.prices];
-    } else {
-      this.displayedPrices = this.selectedCountry
-        ? this.allPrices.filter(p => p.country === this.selectedCountry)
-        : [...this.allPrices];
+  applyFilters(): void {
+    // Commencer avec tous les prix
+    if (this.filteredInAppPurchases.length === 0) return;
+    
+    // Récupérer tous les prix si pas encore fait
+    if (this.allPrices.length === 0) {
+      this.allPrices = this.filteredInAppPurchases.flatMap(inApp => 
+        inApp.prices.map(price => ({
+          ...price,
+          inAppName: inApp.name,
+          productId: inApp.productId
+        }))
+      );
     }
+    
+    // Filtrer par in-apps si sélectionnés
+    if (this.selectedInAppIds.length > 0) {
+      // Filtrer les prix pour n'inclure que ceux des in-apps sélectionnés
+      const selectedInApps = this.filteredInAppPurchases.filter(inApp => 
+        this.selectedInAppIds.includes(inApp.id)
+      );
+      
+      if (selectedInApps.length === 1) {
+        this.selectedInApp = selectedInApps[0];
+      } else {
+        this.selectedInApp = null;
+      }
+      
+      this.displayedPrices = this.allPrices.filter(price => {
+        return selectedInApps.some(inApp => inApp.productId === price.productId);
+      });
+    } else {
+      this.selectedInApp = null;
+      this.displayedPrices = [...this.allPrices];
+    }
+    
+    // Filtrer par pays si sélectionnés
+    if (this.selectedCountries.length > 0) {
+      this.displayedPrices = this.displayedPrices.filter(price => 
+        this.selectedCountries.includes(price.country)
+      );
+    }
+    
+    // Filtrer par type d'in-app si sélectionné
+    if (this.selectedType && this.selectedInApp === null) {
+      const inAppsOfType = this.filteredInAppPurchases
+        .filter(inApp => inApp.type === this.selectedType)
+        .map(inApp => inApp.productId);
+      
+      this.displayedPrices = this.displayedPrices.filter(price => 
+        inAppsOfType.includes(price.productId || '')
+      );
+    }
+    
+    // Filtrer par type de prix si sélectionné
+    if (this.selectedPriceType) {
+      this.displayedPrices = this.displayedPrices.filter(price => 
+        price.price_type === this.selectedPriceType
+      );
+    }
+    
     this.updateDataSource();
     this.saveOriginalPrices();
+  }
+
+  // Méthodes pour gérer les sélections de pays
+  isCountrySelected(countryCode: string): boolean {
+    return this.selectedCountries.includes(countryCode);
+  }
+
+  toggleCountrySelection(countryCode: string): void {
+    const index = this.selectedCountries.indexOf(countryCode);
+    if (index === -1) {
+      this.selectedCountries.push(countryCode);
+    } else {
+      this.selectedCountries.splice(index, 1);
+    }
+    this.applyFilters();
+  }
+
+  // Méthodes de réinitialisation pour chaque filtre individuel
+  resetCountryFilter(): void {
+    this.selectedCountries = [];
+    this.applyFilters();
+  }
+
+  resetInAppFilter(): void {
+    this.selectedInAppIds = [];
+    this.selectedInApp = null;
+    this.applyFilters();
+  }
+
+  /*resetTypeFilter(): void {
+    this.selectedType = '';
+    this.applyFilters();
+  }*/
+
+  resetPriceTypeFilter(): void {
+    this.selectedPriceType = '';
+    this.applyFilters();
   }
 
   selectInApp(inAppId: string): void {
+    this.selectedInAppIds = [inAppId];
     this.selectedInApp = this.filteredInAppPurchases.find(inApp => inApp.id === inAppId) || null;
-    this.selectedInAppId = inAppId;
-    this.selectedCountry = '';
-    
-    this.displayedPrices = this.selectedInApp ? [...this.selectedInApp.prices] : [];
-    this.updateDataSource();
-    this.saveOriginalPrices();
+    this.selectedCountries = [];
+    this.selectedType = '';
+    this.selectedPriceType = '';
+    this.applyFilters();
   }
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
-  }
-
-  goHome(): void {
-    this.router.navigateByUrl('/');
   }
 
   showAllInApps(): void {
@@ -199,25 +309,11 @@ export class InAppPurchaseComponent implements OnInit {
       }))
     );
     this.displayedPrices = [...this.allPrices];
-    this.selectedInAppId = '';
+    this.selectedInAppIds = [];
     this.selectedInApp = null;
-    this.selectedCountry = '';
-    this.updateDataSource();
-    this.saveOriginalPrices();
-  }
-
-  onInAppSelectionChange(): void {
-    if (this.selectedInAppId) {
-      const foundInApp = this.filteredInAppPurchases.find(inApp => inApp.id === this.selectedInAppId);
-      this.selectedInApp = foundInApp || null;
-      
-      if (this.selectedInApp) {
-        this.displayedPrices = [...this.selectedInApp.prices];
-      }
-    } else {
-      this.selectedInApp = null;
-      this.showAllInApps();
-    }
+    this.selectedCountries = [];
+    this.selectedType = '';
+    this.selectedPriceType = '';
     this.updateDataSource();
     this.saveOriginalPrices();
   }
@@ -228,18 +324,16 @@ export class InAppPurchaseComponent implements OnInit {
 
   hasPriceChanges(): boolean {
     if (!this.originalPrices.length || !this.dataSource.data.length) return false;
-    
     return this.dataSource.data.some((price, index) => {
       return price.desired_price !== this.originalPrices[index]?.desired_price;
     });
   }
 
   submitAllPriceChanges(): void {
-    if (!this.hasPriceChanges()) return;
+    if (!this.hasPriceChanges() || this.isUpdatingPrice) return;
     
     this.isUpdatingPrice = true;
     
-    // Récupérer les changements avec leurs identifiants d'in-app correspondants
     const changesByInApp = new Map<string, Array<{country: string, desired_price: number}>>();
     
     this.dataSource.data
@@ -248,15 +342,20 @@ export class InAppPurchaseComponent implements OnInit {
         return hasChanged && price.desired_price !== undefined;
       })
       .forEach(price => {
-        // Si on est en mode "tous les in-apps", on a besoin de savoir à quel in-app chaque prix appartient
-        const inAppId = this.selectedInAppId || 
-                       (price.productId && this.getInAppIdByProductId(price.productId));
+        let inAppId = null;
+        
+        // Si on a sélectionné un seul in-app, on utilise son ID
+        if (this.selectedInAppIds.length === 1) {
+          inAppId = this.selectedInAppIds[0];
+        } else {
+          // Sinon, on recherche l'in-app correspondant au productId
+          inAppId = this.getInAppIdByProductId(price.productId || '');
+        }
         
         if (inAppId) {
           if (!changesByInApp.has(inAppId)) {
             changesByInApp.set(inAppId, []);
           }
-          
           changesByInApp.get(inAppId)!.push({
             country: price.country,
             desired_price: price.desired_price!
@@ -269,10 +368,9 @@ export class InAppPurchaseComponent implements OnInit {
       return;
     }
     
-    // Utiliser Promise.all pour attendre que toutes les mises à jour soient terminées
     const updatePromises = Array.from(changesByInApp.entries()).map(([inAppId, changes]) => {
       return new Promise<void>((resolve, reject) => {
-        this.appStoreService.updateMultipleDesiredPrices(inAppId, changes).subscribe({
+        this.appStoreService.updateMultipleDesiredPricesInApp(inAppId, changes).subscribe({
           next: () => resolve(),
           error: (err) => {
             console.error(`Error updating prices for inAppId ${inAppId}:`, err);
@@ -284,11 +382,17 @@ export class InAppPurchaseComponent implements OnInit {
     
     Promise.all(updatePromises)
       .then(() => {
-        // Recharger les données après toutes les mises à jour
+        this.showSuccessMessage = true;
+        setTimeout(() => {
+          this.showSuccessMessage = false;
+        }, 3000);
         this.loadInAppPurchases();
-        this.isUpdatingPrice = false;
+        this.saveOriginalPrices();
       })
       .catch(() => {
+        // Handle error if needed
+      })
+      .finally(() => {
         this.isUpdatingPrice = false;
       });
   }
@@ -306,7 +410,6 @@ export class InAppPurchaseComponent implements OnInit {
     this.dataSource._updateChangeSubscription();
   }
 
-  
   loadCountries(): void {
     this.appStoreService.getCountries().subscribe({
       next: (countries) => {
@@ -322,5 +425,15 @@ export class InAppPurchaseComponent implements OnInit {
   getCurrency(countryCode: string): string {
     const country = this.countries.find(c => c.code === countryCode);
     return country?.currency || '';
+  }
+  
+  resetFilters(): void {
+    this.selectedCountries = [];
+    this.selectedType = '';
+    this.selectedPriceType = '';
+    this.selectedInAppIds = [];
+    this.selectedInApp = null;
+    this.isCountryFilterVisible = false;
+    this.showAllInApps();
   }
 }
