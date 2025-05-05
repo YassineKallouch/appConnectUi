@@ -15,6 +15,7 @@ import { isPlatformBrowser } from '@angular/common';
     ) {}
   
     canActivate(): boolean {
+      console.log('LoginGuard: isLoggedIn =', this.auth.isLoggedIn());
       if (this.auth.isLoggedIn()) {
         if (isPlatformBrowser(this.platformId)) {
           this.router.navigate(['/']);

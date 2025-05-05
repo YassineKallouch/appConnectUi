@@ -82,8 +82,11 @@
   
       <!-- Inscription -->
       <mat-card-actions class="login-footer">
-        <span>New here ?</span>
-        <a mat-button color="primary" routerLink="/register">Create account</a>
+        <!--<span>New here ?</span>
+        <a mat-button color="primary" routerLink="/register">Create account</a>-->
+        <div class="register-link">
+          <p>New here ? <a [routerLink]="['/register']">Create account</a></p>
+        </div>
       </mat-card-actions>
     </mat-card>
   </div>

@@ -119,6 +119,12 @@ export class AppStoreService {
   setCredentials(credentials: { userId: string; issuerId: string; apiKey: string }): Observable<any> {
     return this.http.post(`${this.baseUrl}/set-credentials`, credentials);
   }
+
+  validateKeys(userId: string, issuerId: string, apiKey: string): Observable<any> {
+    return this.http.post<any>('http://localhost:5000/api/validate-credentials', {
+      userId, issuerId, apiKey
+    });
+  }
 }
   
 

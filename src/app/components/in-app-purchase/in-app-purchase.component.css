@@ -137,6 +137,20 @@ app-header {
   margin-right: 8px;
 }
 
+.error-message {
+  display: flex;
+  align-items: center;
+  background-color: #eec0c0;
+  color: #ff0000;
+  padding: 10px 16px;
+  border-radius: 4px;
+  margin-top: 16px;
+}
+
+.error-message mat-icon {
+  margin-right: 8px;
+}
+
 .spin-icon {
   animation: spin 1s infinite linear;
 }

@@ -168,7 +168,7 @@ export class SubscriptionComponent implements OnInit {
     const periods = new Set<string>();
     this.filteredSubscriptions.forEach(sub => {
       if (sub.subscriptionPeriod) {
-        periods.add(sub.subscriptionPeriod);
+        periods.add(this.formatSubscriptionPeriod(sub.subscriptionPeriod));
       }
     });
     this.subscriptionPeriods = [...periods];
@@ -183,13 +183,25 @@ export class SubscriptionComponent implements OnInit {
         desired_price: price.desired_price,
         subscriptionName: sub.name,
         productId: sub.productId,
-        subscriptionPeriod: sub.subscriptionPeriod
+        subscriptionPeriod: this.formatSubscriptionPeriod(sub.subscriptionPeriod)
       }))
     );
     this.displayedPrices = [...this.allPrices];
     this.resetAllFilters();
     this.updateDataSource();
     this.saveOriginalPrices();
+  }
+
+  private formatSubscriptionPeriod(period: string): string {
+    if (!period) return period;
+    
+    switch(period) {
+      case 'ONE_MONTH': return '1 Month';
+      case 'ONE_YEAR': return '1 Year';
+      case 'TRIAL': return 'Trial';
+      case 'LIFETIME': return 'Lifetime';
+      default: return period;
+    }
   }
   
   applyFilters(): void {
@@ -296,6 +308,13 @@ export class SubscriptionComponent implements OnInit {
     
     const changesBySubscription = new Map<number, Array<{country: string, desired_price: number}>>();
     
+    // Sauvegardez l'état actuel des filtres
+    const currentFilters = {
+        countries: [...this.selectedCountries],
+        subscriptionIds: [...this.selectedSubscriptionIds],
+        period: this.selectedPeriod
+    };
+    
     this.dataSource.data
       .filter((price, index) => {
         const hasChanged = price.desired_price !== this.originalPrices[index]?.desired_price;
@@ -304,11 +323,9 @@ export class SubscriptionComponent implements OnInit {
       .forEach(price => {
         let subscriptionId = null;
         
-        // If we have selected a single subscription, use its ID
         if (this.selectedSubscriptionIds.length === 1) {
           subscriptionId = this.selectedSubscriptionIds[0];
         } else {
-          // Otherwise, find the subscription matching the productId
           subscriptionId = this.getSubscriptionIdByProductId(price.productId);
         }
         
@@ -346,8 +363,15 @@ export class SubscriptionComponent implements OnInit {
         setTimeout(() => {
           this.showSuccessMessage = false;
         }, 3000);
-        this.loadSubscriptions();
+        
+        // Au lieu de recharger tout, mettez simplement à jour les données locales
         this.saveOriginalPrices();
+        
+        // Réappliquez les filtres après la mise à jour
+        this.selectedCountries = currentFilters.countries;
+        this.selectedSubscriptionIds = currentFilters.subscriptionIds;
+        this.selectedPeriod = currentFilters.period;
+        this.applyFilters();
       })
       .catch(() => {
         // Handle error if needed

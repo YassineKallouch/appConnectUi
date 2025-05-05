@@ -122,7 +122,7 @@ export class NavigationComponent implements OnInit {
 
   goHome(): void {
     this.currentAppName = null;
-    this.router.navigate(['/']);
+    this.router.navigate(['/home']);
   }
 
   isCurrentApp(app: any): boolean {

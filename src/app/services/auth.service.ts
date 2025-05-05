@@ -1,17 +1,27 @@
 // aut.service.ts
+
+
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 
-
-
 interface LoginResponse {
   message: string;
   token?: string;
 }
 
+interface RegisterResponse {
+  message: string;
+}
+
+interface RegisterUserData {
+  name: string;
+  birthday: string;
+  email: string;
+  password: string;
+}
 @Injectable({
   providedIn: 'root'
 })
@@ -43,16 +53,7 @@ export class AuthService {
     );
   }
 
-  register(email: string, password: string, name?: string): Observable<boolean> {
-    return this.http.post<{ message: string }>(`${this.apiUrl}/register`, { 
-      email, 
-      password, 
-      name 
-    }).pipe(
-      map(response => true),
-      catchError(this.handleError)
-    );
-  }
+
 
   private handleError(error: HttpErrorResponse) {
     console.error('Erreur complète:', error);
@@ -75,5 +76,9 @@ export class AuthService {
 
   isLoggedIn(): boolean {
     return this.isBrowser ? !!localStorage.getItem('authToken') : false;
+  }
+
+  register(userData: { name: string; birthday: string; email: string; password: string; }) {
+    return this.http.post(`${this.apiUrl}/register`, userData);
   }
 }

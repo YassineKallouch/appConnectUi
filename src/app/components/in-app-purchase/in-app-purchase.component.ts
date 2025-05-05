@@ -85,6 +85,8 @@ export class InAppPurchaseComponent implements OnInit {
   syncStatus = '';
   showSuccessMessage = false;
   successMessage = "Prices updated successfully";
+  showErrorMessage = false;
+  errorMessage = "Error while changing price, please try again"
 
   displayedColumns: string[] = ['name', 'country', 'customer_price', 'desired_price', 'price_type'];
   dataSource = new MatTableDataSource<Price>([]);
@@ -344,11 +346,9 @@ export class InAppPurchaseComponent implements OnInit {
       .forEach(price => {
         let inAppId = null;
         
-        // Si on a sélectionné un seul in-app, on utilise son ID
         if (this.selectedInAppIds.length === 1) {
           inAppId = this.selectedInAppIds[0];
         } else {
-          // Sinon, on recherche l'in-app correspondant au productId
           inAppId = this.getInAppIdByProductId(price.productId || '');
         }
         
@@ -389,8 +389,11 @@ export class InAppPurchaseComponent implements OnInit {
         this.loadInAppPurchases();
         this.saveOriginalPrices();
       })
-      .catch(() => {
-        // Handle error if needed
+      .catch((error) => {
+        this.showErrorMessage = true;
+        setTimeout(() => {
+          this.showErrorMessage = false;
+        }, 3000);
       })
       .finally(() => {
         this.isUpdatingPrice = false;
