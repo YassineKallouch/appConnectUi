@@ -1,0 +1,30 @@
+.factor-container {
+    padding: 24px;
+  }
+  
+  .factor-table {
+    width: 80%;
+    border-collapse: collapse;
+    table-layout: fixed; /* <-- force colonnes à taille égale */
+  }
+  
+  .factor-table th,
+  .factor-table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+    width: 33.33%;
+    word-wrap: break-word;
+  }
+  
+  .factor-table th {
+    background-color: #f5f5f5;
+  }
+  
+  .factor-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  h2 {
+    margin-bottom: 16px;
+  }

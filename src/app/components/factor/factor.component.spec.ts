@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ExchangeComponent } from './exchange.component';
+import { FactorComponent } from './factor.component';
 
-describe('ExchangeComponent', () => {
-  let component: ExchangeComponent;
-  let fixture: ComponentFixture<ExchangeComponent>;
+describe('FactorComponent', () => {
+  let component: FactorComponent;
+  let fixture: ComponentFixture<FactorComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ExchangeComponent]
+      imports: [FactorComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ExchangeComponent);
+    fixture = TestBed.createComponent(FactorComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

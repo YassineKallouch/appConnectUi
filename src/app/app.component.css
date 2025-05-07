@@ -41,7 +41,3 @@ h1 {
     grid-template-areas: "content content";
     grid-template-columns: 1fr;
 }
-
-body {
-    color: black;
-}

@@ -9,17 +9,19 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDivider } from '@angular/material/divider';
 import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
+import { LogoutComponent } from '../logout/logout.component';
 
 @Component({
   selector: 'app-navigation',
   standalone: true,
   imports: [CommonModule,
-            MatMenuModule,
-            MatButtonModule,
-            MatIconModule,
-            MatDivider,
-            FormsModule,
-            MatTableModule],
+    MatMenuModule,
+    MatButtonModule,
+    MatIconModule,
+    MatDivider,
+    FormsModule,
+    MatTableModule, 
+    LogoutComponent],
   templateUrl: './navigation.component.html',
   styleUrls: ['./navigation.component.css']
 })
@@ -51,6 +53,8 @@ export class NavigationComponent implements OnInit {
       this.selectedView = 'availability';
     } else if (url.includes('/pricing')) {
       this.selectedView = 'pricing';
+    } else if(url.includes('factor')){
+      this.selectedView = 'factor';
     } else {
       this.selectedView = 'description';
     }
@@ -73,6 +77,9 @@ export class NavigationComponent implements OnInit {
       case 'pricing':
         this.router.navigate(['/', this.currentAppName, 'pricing']);
         break;
+      case 'factor':
+        this.router.navigate(['/', this.currentAppName, 'factor']);
+        break;
       default:
         this.router.navigate(['/', this.currentAppName]);
     }
@@ -81,6 +88,7 @@ export class NavigationComponent implements OnInit {
   ngOnInit(): void {
     this.loadAvailableApps();
     this.updateCurrentApp(this.router.url);
+    this.updateSelectedView(this.router.url);
   }
   
   updateCurrentApp(url: string): void {
@@ -88,12 +96,8 @@ export class NavigationComponent implements OnInit {
       this.currentAppName = null;
       return;
     }
-    
-    // Décode l'URL pour gérer les espaces et caractères spéciaux
     const decodedUrl = decodeURIComponent(url);
-    // Trouve l'application qui correspond
     const app = this.availableApps.find(a => {
-      // Vérifie si le nom de l'app (tel quel) est dans l'URL décodée
       return decodedUrl.includes(`/${a.name}`);
     });
     

@@ -55,13 +55,13 @@ export class LoginComponent {
       this.authService.login(email, password).subscribe({
         next: (success) => {
           if (success) {
-            this.snackBar.open('Connexion réussie', 'Fermer', { duration: 3000 });
+            this.snackBar.open('Connection successful', 'Close', { duration: 3000 });
             
             // Récupère l'URL de redirection ou utilise '/'
             const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
             this.router.navigateByUrl(returnUrl);
           } else {
-            this.showError('Échec de la connexion');
+            this.showError('Login failed');
           }
         },
         error: (error) => {
@@ -74,7 +74,7 @@ export class LoginComponent {
     }
   }
   private showError(message: string) {
-    this.snackBar.open(message, 'Fermer', { 
+    this.snackBar.open(message, 'Close', { 
       duration: 5000,
       panelClass: ['error-snackbar']
     });

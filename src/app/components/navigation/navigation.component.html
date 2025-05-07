@@ -76,6 +76,19 @@
       >
         Pricing
       </button>
+      <button
+        mat-button
+        class="side-tab"
+        [class.active]="selectedView === 'factor'"
+        (click)="selectedView = 'factor'; onViewChange()"
+      >
+        Factor
+      </button>
     </div>
   }
+  <div class="side-nav-footer">
+    <div class="footer-content">
+      <app-logout></app-logout>
+    </div>
+  </div>
 </div>

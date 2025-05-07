@@ -4,12 +4,12 @@ import { Router } from '@angular/router';
 import { MatIcon } from '@angular/material/icon';
 
 @Component({
-  selector: 'app-header',
-  templateUrl: './header.component.html',
+  selector: 'app-logout',
+  templateUrl: './logout.component.html',
   imports:[MatIcon],
-  styleUrls: ['./header.component.css']
+  styleUrls: ['./logout.component.css']
 })
-export class HeaderComponent {
+export class LogoutComponent {
   showLogout = false;
 
   constructor(

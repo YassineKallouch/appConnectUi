@@ -1,0 +1,30 @@
+<div class="factor-container">
+    <h3>Currency Factors</h3>
+    <h4>For 1$</h4>
+    @if(countries.length > 0) {
+    <table class="factor-table">
+      <thead>
+        <tr>
+          <th>Country</th>
+          <th>Currency</th>
+          <th>Factor vs USD</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (country of countries; track country.code) {
+            <tr>
+            <td>{{ country.name }}</td>
+            <td>{{ country.currency }} ({{ country.currency_symbol }})</td>
+            <td>
+                {{ getFactorForCountry(country) }}
+            </td>
+            </tr>
+        }
+      </tbody>
+    </table>
+    } @else {
+        <ng-template #loading>
+        <p>Loading countries...</p>
+        </ng-template>
+    }
+  </div>

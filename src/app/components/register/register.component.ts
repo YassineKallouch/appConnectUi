@@ -84,17 +84,17 @@ export class RegisterComponent {
   
       this.authService.register(userData).subscribe({
         next: (response: any) => {
-          this.snackBar.open('Inscription réussie! Vous pouvez maintenant vous connecter.', 'Close', { 
+          this.snackBar.open('Registration successful! You can now log in.', 'Close', { 
             duration: 5000 
           });
           this.router.navigate(['/login']);
         },
         error: (error) => {
-          let errorMessage = 'Erreur lors de l\'inscription';
+          let errorMessage = 'Error during registration';
           if (error.error && error.error.error) {
             errorMessage = error.error.error;
           }
-          this.snackBar.open(errorMessage, 'Fermer', { 
+          this.snackBar.open(errorMessage, 'Close', { 
             duration: 5000,
             panelClass: ['error-snackbar']
           });
@@ -105,7 +105,6 @@ export class RegisterComponent {
         }
       });
     } else {
-      // Marquer tous les champs comme touchés pour afficher les erreurs
       this.markFormGroupTouched(this.registerForm);
     }
   }

@@ -13,7 +13,6 @@ import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { HeaderComponent } from '../header/header.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 
 interface SubscriptionPrice {
@@ -67,7 +66,6 @@ interface SubscriptionDisplay {
     MatInputModule,
     MatButtonModule,
     MatCheckboxModule,
-    HeaderComponent
   ],
   templateUrl: './subscription.component.html',
   styleUrls: ['./subscription.component.css']

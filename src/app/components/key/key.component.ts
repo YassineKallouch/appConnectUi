@@ -4,9 +4,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { MatLabel } from '@angular/material/select';
 import { AppStoreService } from '../../services/app-store.service';
-import { HeaderComponent } from '../header/header.component';
+import { LogoutComponent } from '../logout/logout.component';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -17,7 +16,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     MatButtonModule,
     MatIconModule,
     ReactiveFormsModule,
-    HeaderComponent
+    LogoutComponent
   ],
 
   templateUrl: './key.component.html',

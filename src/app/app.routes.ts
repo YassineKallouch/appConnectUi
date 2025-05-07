@@ -8,6 +8,7 @@ import { DescriptionComponent } from './components/description/description.compo
 import { SubscriptionComponent } from './components/subscription/subscription.component';
 import { KeyComponent } from './components/key/key.component';
 import { RegisterComponent } from './components/register/register.component';
+import { FactorComponent } from './components/factor/factor.component';
 
 
 export const routes: Routes = [
@@ -28,12 +29,12 @@ export const routes: Routes = [
           { path: 'in-app', component: InAppPurchaseComponent },
           { path: 'subscriptions', component: SubscriptionComponent },
           { path: 'availability', component: DescriptionComponent },
-          { path: 'pricing', component: DescriptionComponent }
+          { path: 'pricing', component: DescriptionComponent },
+          { path: 'factor', component: FactorComponent}
         ]
       }
     ]
   },
 
-  // Wildcard en toute fin
   { path: '**', redirectTo: '' }
 ];

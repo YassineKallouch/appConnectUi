@@ -43,7 +43,7 @@ export class AuthService {
   login(email: string, password: string): Observable<boolean> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { email, password }).pipe(
       map(response => {
-        if (response.message === "Connexion réussie" && this.isBrowser) {
+        if (response.message === "Connection successful" && this.isBrowser) {
           localStorage.setItem('authToken', 'mock-token');
           return true;
         }
