@@ -1,5 +1,5 @@
-<div class="app-grid-layout">
-  @if(showNavigation) {
+@if(showNavigation) {
+  <div class="app-grid-layout">
     <header class="app-header">
       <h1>App Store Connect Manager</h1>
     </header>
@@ -7,9 +7,13 @@
     <nav class="app-navigation">
       <app-navigation></app-navigation>
     </nav>
-  }
-
-  <main class="app-content">
+    
+    <main class="app-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+} @else {
+  <div class="auth-container">
     <router-outlet></router-outlet>
-  </main>
-</div>
+  </div>
+}

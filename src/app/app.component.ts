@@ -1,10 +1,7 @@
-import { Component } from '@angular/core';
-import { NavigationEnd, RouterOutlet } from '@angular/router';
-import { InAppPurchaseComponent } from './components/in-app-purchase/in-app-purchase.component';
-import { Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { NavigationComponent } from './components/navigation/navigation.component';
-import { filter } from 'rxjs';
-
 
 @Component({
   selector: 'app-root',
@@ -12,21 +9,23 @@ import { filter } from 'rxjs';
     RouterOutlet, NavigationComponent
   ],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrls: ['./app.component.css']
 })
-export class AppComponent {
-  showNavigation = false;
+export class AppComponent implements OnInit {
+  showNavigation = true;
 
-  constructor(private router: Router) {
-    this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
-      .subscribe((event: NavigationEnd) => {
-        this.updateNavigationVisibility(event.url);
-      });
-  }
+  constructor(private router: Router) {}
 
-  private updateNavigationVisibility(url: string): void {
-    // Cache la navigation pour les routes login et home
-    this.showNavigation = !url.includes('/login') && url !== '/';
+  ngOnInit() {
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe((event: NavigationEnd) => {
+      const isAuthPage = event.url === '/login' || event.url === '/register' || event.url === '/';
+      this.showNavigation = !isAuthPage;
+    });
+    
+    const currentUrl = this.router.url;
+    const isAuthPage = currentUrl === '/login' || currentUrl === '/register' || currentUrl === '/';
+    this.showNavigation = !isAuthPage;
   }
 }

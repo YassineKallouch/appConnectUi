@@ -1,10 +1,10 @@
-.login-container {
+ .login-container {
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    padding: 20px;
+    padding: 0;
 }
 
 .login-card {
@@ -89,3 +89,12 @@
     background-color: #f44336;
     color: white;
 }
+
+.login-footer a {
+    color: #1c2868;
+    text-decoration: none;
+  }
+  
+  .login-footer a:visited {
+    color: #1c2868;
+  }
