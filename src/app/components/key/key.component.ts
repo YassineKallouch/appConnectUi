@@ -52,11 +52,9 @@ export class KeyComponent implements OnInit {
       this.appStoreService.validateKeys(userId, issuerId, apiKey)
         .subscribe({
           next: (res) => {
-            console.log('Validation réussie', res);
-            this.router.navigate(['/home']);  // Redirection si OK
+            this.router.navigate(['/home']);
           },
           error: (err) => {
-            console.error('Erreur validation', err);
             this.snackBar.open("API credentials validation error", 'Close', {
               duration: 4000
             });

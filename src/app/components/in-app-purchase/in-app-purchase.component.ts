@@ -144,13 +144,6 @@ export class InAppPurchaseComponent implements OnInit {
     this.appStoreService.getAllInAppPurchases().subscribe({
       next: (data: InAppPurchase[]) => {
         this.inAppPurchases = data;
-        const validApps = [...new Set(this.inAppPurchases.map(inApp => inApp.app_name))];
-
-        if (!validApps.includes(this.appName)) {
-          this.router.navigateByUrl('/');
-          return;
-        }
-
         this.filterInAppPurchases();              
         this.inAppTypes = [...new Set(this.filteredInAppPurchases.map(inApp => inApp.type))];               
         this.showAllInApps();       
@@ -159,8 +152,9 @@ export class InAppPurchaseComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error loading in-app purchases:', err);
-        this.router.navigateByUrl('/');
         this.isLoading = false;
+        // Ne redirigez pas en cas d'erreur, affichez juste un tableau vide
+        this.dataSource.data = [];
       }
     });
   }
@@ -183,11 +177,16 @@ export class InAppPurchaseComponent implements OnInit {
     this.filteredInAppPurchases = this.inAppPurchases.filter(
       (inApp) => inApp.app_name === this.appName
     );
+    // Ne redirigez pas s'il n'y a pas d'achats intégrés, laissez simplement un tableau vide
   }
 
   applyFilters(): void {
     // Commencer avec tous les prix
-    if (this.filteredInAppPurchases.length === 0) return;
+    if (this.filteredInAppPurchases.length === 0) {
+      this.displayedPrices = [];
+      this.dataSource.data = [];
+      return;
+    }
     
     // Récupérer tous les prix si pas encore fait
     if (this.allPrices.length === 0) {
@@ -276,11 +275,6 @@ export class InAppPurchaseComponent implements OnInit {
     this.selectedInApp = null;
     this.applyFilters();
   }
-
-  /*resetTypeFilter(): void {
-    this.selectedType = '';
-    this.applyFilters();
-  }*/
 
   resetPriceTypeFilter(): void {
     this.selectedPriceType = '';

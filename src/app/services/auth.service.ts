@@ -11,17 +11,6 @@ interface LoginResponse {
   message: string;
   token?: string;
 }
-
-interface RegisterResponse {
-  message: string;
-}
-
-interface RegisterUserData {
-  name: string;
-  birthday: string;
-  email: string;
-  password: string;
-}
 @Injectable({
   providedIn: 'root'
 })
