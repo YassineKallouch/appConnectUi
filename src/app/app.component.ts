@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { NavigationComponent } from './components/navigation/navigation.component';
+import { LogoutComponent } from './components/logout/logout.component';
 
 @Component({
   selector: 'app-root',
   imports: [
-    RouterOutlet, NavigationComponent
+    RouterOutlet, NavigationComponent, LogoutComponent
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']

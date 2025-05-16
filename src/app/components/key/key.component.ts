@@ -8,17 +8,22 @@ import { AppStoreService } from '../../services/app-store.service';
 import { LogoutComponent } from '../logout/logout.component';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDivider } from '@angular/material/divider';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-key',
-  imports: [MatInputModule,
+  imports: [
+    MatInputModule,
     MatFormFieldModule,
     MatButtonModule,
     MatIconModule,
     ReactiveFormsModule,
-    LogoutComponent
+    LogoutComponent,
+    MatProgressSpinnerModule,
+    MatCardModule
   ],
-
   templateUrl: './key.component.html',
   styleUrl: './key.component.css'
 })
@@ -40,12 +45,10 @@ export class KeyComponent implements OnInit {
     });
   }
 
-
-
   onSubmit(): void {
     if (this.keyForm.valid) {
       const { userId, issuerId, apiKey } = this.keyForm.value;
-  
+
       this.appStoreService.validateKeys(userId, issuerId, apiKey)
         .subscribe({
           next: (res) => {

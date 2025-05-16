@@ -34,6 +34,7 @@ interface Subscription {
   name: string;
   productId: string;
   subscriptionPeriod: string;
+  group: string;
   prices: SubscriptionPrice[];
 }
 
@@ -60,24 +61,13 @@ export class AppStoreService {
   
   constructor(private http: HttpClient) {}
   
-  // Récupère les applications disponibles (version optimisée)
   getAvailableApps(): Observable<App[]> {
     return this.http.get<any[]>(`${this.baseUrl}/db/apps`).pipe(
-      map(apps => {
-        // Utilisation d'un Map pour éliminer les doublons par app_name
-        const uniqueApps = new Map<string, App>();
-        apps.forEach(app => {
-          if (app.app_name && !uniqueApps.has(app.app_name)) {
-            uniqueApps.set(app.app_name, {
-              id: app.app_id,
-              name: app.app_name,
-              bundle_id: app.bundle_id
-            });
-          }
-        });
-        return Array.from(uniqueApps.values());
-      }),
-      distinctUntilChanged()
+      map(apps => apps.map(app => ({
+        id: app.app_id,
+        name: app.app_name,
+        bundle_id: app.bundle_id
+      })))
     );
   }
   
@@ -102,7 +92,13 @@ export class AppStoreService {
   }
 
   getAllSubscriptions(): Observable<Subscription[]> {
-    return this.http.get<Subscription[]>(`${this.baseUrl}/subscriptions`);
+    const appId = localStorage.getItem('currentAppId');
+    return this.http.get<Subscription[]>(`${this.baseUrl}/subscriptions?app_id=${appId}`);
+  }
+
+  getSubscriptions() {
+    const appId = localStorage.getItem('currentAppId');
+    return this.http.get(`/api/subscriptions?app_id=${appId}`);
   }
   
   updateMultipleDesiredPricesSubscription(subscriptionId: number, changes: Array<{country: string, desired_price: number}>): Observable<SubscriptionPrice[]> {
@@ -115,9 +111,6 @@ export class AppStoreService {
         }),
       },
     );
-  }
-  setCredentials(credentials: { userId: string; issuerId: string; apiKey: string }): Observable<any> {
-    return this.http.post(`${this.baseUrl}/set-credentials`, credentials);
   }
 
   validateKeys(userId: string, issuerId: string, apiKey: string): Observable<any> {

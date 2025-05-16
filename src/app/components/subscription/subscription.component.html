@@ -5,6 +5,29 @@
         <h3>Subscriptions</h3>
         
         <div class="filters-container">
+
+          <!-- Filter by subscription -->
+          <div class="filter-with-reset">
+            <mat-form-field appearance="fill" class="subscription-filter">
+              <mat-label>Filter by subscription {{ selectedSubscriptionIds.length > 0 ? '(' + selectedSubscriptionIds.length + ' selected)' : '' }}</mat-label>
+              <mat-select multiple [(ngModel)]="selectedSubscriptionIds" (selectionChange)="applyFilters()">
+                <mat-select-trigger>
+                  {{ selectedSubscriptionIds.length > 0 ? selectedSubscriptionIds.length + ' selected' : '' }}
+                </mat-select-trigger>
+                @for (subscription of filteredSubscriptions; track subscription.id) {
+                  <mat-option [value]="subscription.id">
+                    {{ subscription.name }}
+                  </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            @if (selectedSubscriptionIds.length > 0) {
+              <button mat-icon-button color="primary" (click)="resetSubscriptionFilter()" class="reset-filter-button">
+                <mat-icon>close</mat-icon>
+              </button>
+            }
+          </div>
+
           <!-- Filter by country -->
           <div class="filter-with-reset">
             <mat-form-field appearance="fill" class="country-filter">
@@ -27,27 +50,7 @@
             }
           </div>
           
-          <!-- Filter by subscription -->
-          <div class="filter-with-reset">
-            <mat-form-field appearance="fill" class="subscription-filter">
-              <mat-label>Filter by subscription {{ selectedSubscriptionIds.length > 0 ? '(' + selectedSubscriptionIds.length + ' selected)' : '' }}</mat-label>
-              <mat-select multiple [(ngModel)]="selectedSubscriptionIds" (selectionChange)="applyFilters()">
-                <mat-select-trigger>
-                  {{ selectedSubscriptionIds.length > 0 ? selectedSubscriptionIds.length + ' selected' : '' }}
-                </mat-select-trigger>
-                @for (subscription of filteredSubscriptions; track subscription.id) {
-                  <mat-option [value]="subscription.id">
-                    {{ subscription.name }}
-                  </mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-            @if (selectedSubscriptionIds.length > 0) {
-              <button mat-icon-button color="primary" (click)="resetSubscriptionFilter()" class="reset-filter-button">
-                <mat-icon>close</mat-icon>
-              </button>
-            }
-          </div>
+          
           
           <!-- Filter by subscription period -->
           <div class="filter-with-reset">
@@ -130,9 +133,18 @@
                         {{ element.subscriptionPeriod }}
                       </td>
                     </ng-container>
+
+                    <ng-container matColumnDef="group">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header> Group </th>
+                      <td mat-cell *matCellDef="let element"> 
+                        {{ element.group }} 
+                      </td>
+                    </ng-container>
                 
                     <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
                     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+                    
                   </table>
                 
                   @if (dataSource.data.length === 0) {
@@ -161,6 +173,11 @@
                   <div class="success-message">
                     <mat-icon>check_circle</mat-icon>
                     {{ successMessage }}
+                  </div>
+                } @else if(showErrorMessage) {
+                  <div class="error-message">
+                    <mat-icon>close</mat-icon>
+                    {{ errorMessage }}
                   </div>
                 }
               </div>

@@ -1,10 +1,10 @@
 .page-layout {
     display: flex;
-    height: 100%; /* ou 100vh si tu veux pleine hauteur */
+    height: 100%;
   }
   
   app-navigation {
-    width: 250px; /* ou la largeur que tu veux pour ta nav */
+    width: 250px;
     flex-shrink: 0;
   }
   

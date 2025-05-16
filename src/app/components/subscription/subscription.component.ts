@@ -30,6 +30,7 @@ interface Subscription {
   name: string;
   productId: string;
   subscriptionPeriod: string;
+  group: string;
   prices: SubscriptionPrice[];
 }
 
@@ -48,6 +49,7 @@ interface SubscriptionDisplay {
   subscriptionName: string;
   productId: string;
   subscriptionPeriod: string;
+  group: string;
 }
 
 @Component({
@@ -82,7 +84,9 @@ export class SubscriptionComponent implements OnInit {
   selectedPeriod: string = '';
   
   subscriptionPeriods: string[] = [];
-  displayedColumns: string[] = ['name', 'country', 'customer_price', 'desired_price', 'subscription_period'];
+  displayedColumns: string[] = ['name', 'country', 'customer_price', 'desired_price', 'subscription_period', 'group'];
+
+
   dataSource = new MatTableDataSource<SubscriptionDisplay>([]);
   
   allPrices: SubscriptionDisplay[] = [];
@@ -93,6 +97,8 @@ export class SubscriptionComponent implements OnInit {
   isUpdatingPrice = false;
   showSuccessMessage = false;
   successMessage = "Prices updated successfully";
+  showErrorMessage = false;
+  errorMessage = "Error while changing price, please try again"
   
   @ViewChild(MatSort) sort!: MatSort;
   
@@ -122,6 +128,7 @@ export class SubscriptionComponent implements OnInit {
         case 'customer_price': return data.customer_price;
         case 'desired_price': return data.desired_price || 0;
         case 'subscription_period': return data.subscriptionPeriod;
+        case 'group': return data.group;
         default: return '';
       }
     };
@@ -181,7 +188,8 @@ export class SubscriptionComponent implements OnInit {
         desired_price: price.desired_price,
         subscriptionName: sub.name,
         productId: sub.productId,
-        subscriptionPeriod: this.formatSubscriptionPeriod(sub.subscriptionPeriod)
+        subscriptionPeriod: this.formatSubscriptionPeriod(sub.subscriptionPeriod),
+        group: sub.group
       }))
     );
     this.displayedPrices = [...this.allPrices];
@@ -362,17 +370,13 @@ export class SubscriptionComponent implements OnInit {
           this.showSuccessMessage = false;
         }, 3000);
         
-        // Au lieu de recharger tout, mettez simplement à jour les données locales
         this.saveOriginalPrices();
-        
-        // Réappliquez les filtres après la mise à jour
-        this.selectedCountries = currentFilters.countries;
-        this.selectedSubscriptionIds = currentFilters.subscriptionIds;
-        this.selectedPeriod = currentFilters.period;
-        this.applyFilters();
       })
-      .catch(() => {
-        // Handle error if needed
+      .catch((error) => {
+        this.showErrorMessage = true;
+        setTimeout(() => {
+          this.showErrorMessage = false;
+        }, 3000);
       })
       .finally(() => {
         this.isUpdatingPrice = false;

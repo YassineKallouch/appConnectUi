@@ -384,7 +384,8 @@ export class InAppPurchaseComponent implements OnInit {
         setTimeout(() => {
           this.showSuccessMessage = false;
         }, 3000);
-        this.loadInAppPurchases();
+        
+        this.updateLocalPrices(changesByInApp);
         this.saveOriginalPrices();
       })
       .catch((error) => {
@@ -396,6 +397,32 @@ export class InAppPurchaseComponent implements OnInit {
       .finally(() => {
         this.isUpdatingPrice = false;
       });
+  }
+  private updateLocalPrices(changesByInApp: Map<string, Array<{country: string, desired_price: number}>>): void {
+    changesByInApp.forEach((changes, inAppId) => {
+      const inApp = this.inAppPurchases.find(app => app.id === inAppId);
+      if (inApp) {
+        changes.forEach(change => {
+          const price = inApp.prices.find(p => p.country === change.country);
+          if (price) {
+            price.desired_price = change.desired_price;
+          }
+        });
+      }
+    });
+  
+    this.displayedPrices = this.displayedPrices.map(price => {
+      const inAppId = this.getInAppIdByProductId(price.productId || '');
+      if (inAppId && changesByInApp.has(inAppId)) {
+        const change = changesByInApp.get(inAppId)?.find(c => c.country === price.country);
+        if (change) {
+          return { ...price, desired_price: change.desired_price };
+        }
+      }
+      return price;
+    });
+  
+    this.updateDataSource();
   }
 
   private getInAppIdByProductId(productId: string): string | null {

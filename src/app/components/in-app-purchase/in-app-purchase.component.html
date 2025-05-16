@@ -6,28 +6,6 @@
         <h3>In-App Purchases</h3>
         
         <div class="filters-container">
-          <!-- Filtre par pays (avec le même style que les autres filtres) -->
-          <div class="filter-with-reset">
-            <mat-form-field appearance="fill" class="country-filter">
-              <mat-label>Filter by countries {{ selectedCountries.length > 0 ? '(' + selectedCountries.length + ' selected)' : '' }}</mat-label>
-              <mat-select multiple [(ngModel)]="selectedCountries" (selectionChange)="applyFilters()">
-                <mat-select-trigger>
-                  {{ selectedCountries.length > 0 ? selectedCountries.length + ' selected' : '' }}
-                </mat-select-trigger>
-                @for (country of countries; track country.code) {
-                  <mat-option [value]="country.code">
-                    {{ country.name }} ({{ country.currency }})
-                  </mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-            @if (selectedCountries.length > 0) {
-              <button mat-icon-button color="primary" (click)="resetCountryFilter()" class="reset-filter-button">
-                <mat-icon>close</mat-icon>
-              </button>
-            }
-          </div>
-          
           <!-- Filtre par in-app (modifié pour permettre la sélection multiple) -->
           <div class="filter-with-reset">
             <mat-form-field appearance="fill" class="inapp-filter">
@@ -49,25 +27,28 @@
               </button>
             }
           </div>
-          
-          <!-- Filtre par type -->
-          <!--
+
+          <!-- Filtre par pays (avec le même style que les autres filtres) -->
           <div class="filter-with-reset">
-            <mat-form-field appearance="fill" class="type-filter">
-              <mat-label>Filter by type</mat-label>
-              <mat-select [(ngModel)]="selectedType" (selectionChange)="applyFilters()">
-                <mat-option value="">All types</mat-option>
-                @for (type of inAppTypes; track type) {
-                  <mat-option [value]="type">
-                    {{ type }}
+            <mat-form-field appearance="fill" class="country-filter">
+              <mat-label>Filter by countries {{ selectedCountries.length > 0 ? '(' + selectedCountries.length + ' selected)' : '' }}</mat-label>
+              <mat-select multiple [(ngModel)]="selectedCountries" (selectionChange)="applyFilters()">
+                <mat-select-trigger>
+                  {{ selectedCountries.length > 0 ? selectedCountries.length + ' selected' : '' }}
+                </mat-select-trigger>
+                @for (country of countries; track country.code) {
+                  <mat-option [value]="country.code">
+                    {{ country.name }} ({{ country.currency }})
                   </mat-option>
                 }
               </mat-select>
             </mat-form-field>
-            <button mat-icon-button color="primary" *ngIf="selectedType" (click)="resetTypeFilter()" class="reset-filter-button">
-              <mat-icon>close</mat-icon>
-            </button>
-          </div>-->
+            @if (selectedCountries.length > 0) {
+              <button mat-icon-button color="primary" (click)="resetCountryFilter()" class="reset-filter-button">
+                <mat-icon>close</mat-icon>
+              </button>
+            }
+          </div>
           
           <!-- Filtre par price type -->
           <div class="filter-with-reset">

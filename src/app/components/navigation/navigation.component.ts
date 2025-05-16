@@ -118,8 +118,10 @@ export class NavigationComponent implements OnInit {
     });
   }
 
+  // Stocker l'id de l'application dans le local
   navigateToApp(app: any): void {
     this.router.navigate([`/${app.name}`]).then(() => {
+      localStorage.setItem('currentAppId', app.id);
       this.updateCurrentApp(this.router.url);
     });
   }

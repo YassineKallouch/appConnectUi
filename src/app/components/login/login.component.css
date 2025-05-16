@@ -14,13 +14,12 @@
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     animation: fadeIn 0.6s ease-in-out;
-    
 }
 
 .login-header {
     text-align: center;
     padding: 24px 0;
-    background: linear-gradient(135deg, #1c2868 0%, #27347d 100%);
+    background: linear-gradient(50deg, #1b2874 30%, #8695ee 100%);
     color: white;
     display: flex;
     flex-direction: column;
@@ -30,8 +29,8 @@
 }
 
 .login-title {
-    font-size: 28px;
-    font-weight: 500;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 40px;
     margin: 0;
 }
 
